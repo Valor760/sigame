@@ -10,17 +10,6 @@ set(CMAKE_BUILD_TYPE "")
 set(BINARY_OUTPUT_DIR $<1:${CMAKE_CURRENT_SOURCE_DIR}/build/bin>)
 set(EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
 
-# Check for library type [STATIC | SHARED]
-# if(NOT DEFINED LIB_TYPE)
-# 	message("LIB_TYPE variable is not defined. Setting STATIC by default")
-# 	# If library type is not defined, then set static by default
-# 	set(LIB_TYPE STATIC)
-# else()
-# 	string(TOUPPER ${LIB_TYPE} LIB_TYPE) # Convert to upper case
-# 	if(NOT (${LIB_TYPE} MATCHES STATIC OR ${LIB_TYPE} MATCHES SHARED) )
-# 		message("\'${LIB_TYPE}\' is not currently supported")
-# 	endif()
-# endif()
 
 # Set flags according to the OS
 if(WIN32)
@@ -45,10 +34,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_LIB_DIR})
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-find_package(OpenGL REQUIRED)
 
 # Includes
 include_directories(${EXTERNAL_DIR}/glfw/include)
+include_directories(${EXTERNAL_DIR})
 include_directories(${EXTERNAL_DIR}/imgui)
 include_directories(${EXTERNAL_DIR}/imgui/backends)
 
