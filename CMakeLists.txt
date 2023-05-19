@@ -9,6 +9,7 @@ set(OUTPUT_LIB_DIR $<1:${LIB_DIR}>) # $<1:> to remove Debug/Release subdirs
 set(CMAKE_BUILD_TYPE "")
 set(BINARY_OUTPUT_DIR $<1:${CMAKE_CURRENT_SOURCE_DIR}/build/bin>)
 set(EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
+set(LIB_GLAD_PATH ${EXTERNAL_DIR}/glad/gl.c)
 
 
 # Set flags according to the OS
