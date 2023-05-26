@@ -21,6 +21,8 @@ else()
 	message(FATAL_ERROR "Current OS is not supported!")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 # Change default binary location
 # TODO: probably change it to different path?
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_OUTPUT_DIR})

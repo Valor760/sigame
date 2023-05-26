@@ -8,11 +8,19 @@ file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE
 add_executable(${EXEC} ${SRC} ${HEADERS})
 
 add_library(GLAD ${LIB_GLAD_PATH})
+add_library(imgui
+		${EXTERNAL_DIR}/imgui/imgui.cpp
+		${EXTERNAL_DIR}/imgui/imgui_tables.cpp
+		${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
+		${EXTERNAL_DIR}/imgui/imgui_draw.cpp
+		${EXTERNAL_DIR}/imgui/backends/imgui_impl_glfw.cpp
+		${EXTERNAL_DIR}/imgui/backends/imgui_impl_opengl3.cpp
+		)
 
 if(UNIX)
-	set(LIBS pthread GL dl)
+	set(LIBS glfw3 imgui GLAD pthread GL dl)
 else()
-	set(LIBS opengl32)
+	set(LIBS glfw3 imgui GLAD opengl32)
 endif()
 
-target_link_libraries(${EXEC} PUBLIC glfw3 GLAD ${LIBS})
+target_link_libraries(${EXEC} PUBLIC ${LIBS})
