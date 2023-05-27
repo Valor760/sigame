@@ -1,4 +1,5 @@
 #include "app.h"
+#include "log.h"
 
 #include <exception>
 #include <format>
@@ -16,11 +17,10 @@ bool App::Init()
 	/* Init OpenGL and ImGui stuff */
 	if(!glfwInit())
 	{
-		/* FIXME: Make a logger with define for linux (std::format is only in gcc-13) */
-		std::cout << std::format("{}: Failed to initialize glfw\n", __FUNCTION__);
+		LOG_ERROR("Couldn't initialize GLFW");
 		return false;
 	}
-	
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -37,7 +37,7 @@ bool App::Init()
 	// glfwSetWindowMonitor(m_Window, primary, 0, 0, mode->width, mode->height, mode->refreshRate);
 	if(m_Window == nullptr)
 	{
-		std::cout << std::format("{}: Failed to create window\n", __FUNCTION__);
+		LOG_ERROR("Failed to create window");
 		return false;
 	}
 
