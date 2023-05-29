@@ -38,7 +38,7 @@ namespace Consts
 	const int LEVEL_DEBUG  = 3;
 } /* namespace Consts */
 
-void write_log(int level, const char* fmt, ...)
+inline void write_log(int level, const char* fmt, ...)
 {
 	if(!fmt)
 	{
@@ -51,7 +51,7 @@ void write_log(int level, const char* fmt, ...)
 
 	std::stringstream ss;
 	ss << std::put_time(std::localtime(&in_time_t), "%H:%M:%S");
-	std::string log_str = "(" + ss.str() + ")";
+	std::string log_str = "[" + ss.str() + "]";
 
 	/* Set coloring */
 #ifdef _WIN32
@@ -108,6 +108,7 @@ void write_log(int level, const char* fmt, ...)
 }
 } /* namespace Logger */
 
+/* TODO: Hide debug logs when built for release, OR add 'levels' of logging to write_log function */
 #define LOG_DEBUG(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_DEBUG, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
 #define LOG_ERROR(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_ERROR, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
 #define LOG_INFO(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_INFO, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)

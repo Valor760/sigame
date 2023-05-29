@@ -43,6 +43,7 @@ include_directories(${EXTERNAL_DIR}/glfw/include)
 include_directories(${EXTERNAL_DIR})
 include_directories(${EXTERNAL_DIR}/imgui)
 include_directories(${EXTERNAL_DIR}/imgui/backends)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # FIXME: For some reasons it fails to link on glfw first time
 # https://www.glfw.org/docs/latest/build_guide.html#build_link_cmake_source
