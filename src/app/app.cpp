@@ -2,7 +2,6 @@
 #include "log.h"
 
 #include <exception>
-#include <format>
 #include <iostream>
 
 #include <imgui.h>
