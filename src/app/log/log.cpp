@@ -1,4 +1,4 @@
-#pragma once
+#include "log.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -11,37 +11,25 @@
 #include <Windows.h>
 #endif /* _WIN32 */
 
-namespace Logger
+namespace Log
 {
-namespace Consts
-{
-/* TODO: Split defines under each OS */
 #ifdef _WIN32
 	const auto COLOR_ERR   = FOREGROUND_RED;
 	const auto COLOR_INFO  = FOREGROUND_GREEN;
-	#ifndef DISABLE_COLOR_LOG
-		#define WIN32_SET_COLOR(hConsole, color) SetConsoleTextAttribute(hConsole, color);
-	#else
-		#define WIN32_SET_COLOR(hConsole, color)
-	#endif /* DISABLE_COLOR_LOG */
+#define WIN32_SET_COLOR(hConsole, color) SetConsoleTextAttribute(hConsole, color);
 #else
-	#ifndef DISABLE_COLOR_LOG
-		#define COLOR_ERR    "\033[31m"
-		#define COLOR_INFO   "\033[32m"
-		#define COLOR_DEBUG  "\033[34m"
-		#define COLOR_STOP   "\033[0m"
-	#else
-		#define COLOR_ERR    ""
-		#define COLOR_INFO   ""
-		#define COLOR_DEBUG  ""
-		#define COLOR_STOP   ""
-	#endif /* DISABLE_COLOR_LOG */
+#ifndef DISABLE_COLOR_LOG
+	const char* COLOR_ERR    = "\033[31m";
+	const char* COLOR_INFO   = "\033[32m";
+	const char* COLOR_DEBUG  = "\033[34m";
+	const char* COLOR_STOP   = "\033[0m";
+#else
+	const char* COLOR_ERR    = "";
+	const char* COLOR_INFO   = "";
+	const char* COLOR_DEBUG  = "";
+	const char* COLOR_STOP   = "";
+#endif /* DISABLE_COLOR_LOG */
 #endif /* _WIN32 */
-
-	const int LEVEL_ERROR  = 1;
-	const int LEVEL_INFO   = 2;
-	const int LEVEL_DEBUG  = 3;
-} /* namespace Consts */
 
 void write_log(int level, const char* fmt, ...)
 {
@@ -65,13 +53,13 @@ void write_log(int level, const char* fmt, ...)
 	{
 		case Consts::LEVEL_ERROR:
 		{
-			WIN32_SET_COLOR(hConsole, Consts::COLOR_ERR);
+			WIN32_SET_COLOR(hConsole, COLOR_ERR);
 			log_str.append("[ERROR]: ");
 			break;
 		}
 		case Consts::LEVEL_INFO:
 		{
-			WIN32_SET_COLOR(hConsole, Consts::COLOR_INFO);
+			WIN32_SET_COLOR(hConsole, COLOR_INFO);
 			log_str.append("[INFO]: ");
 			break;
 		}
@@ -112,17 +100,3 @@ void write_log(int level, const char* fmt, ...)
 	va_end(args);
 }
 } /* namespace Logger */
-
-/* Undef of all defines to not pollute global namespace */
-#ifdef _WIN32
-	#undef WIN32_SET_COLOR(hConsole, color)
-#else
-	#undef COLOR_ERR
-	#undef COLOR_INFO
-	#undef COLOR_DEBUG
-	#undef COLOR_STOP
-#endif /* _WIN32 */
-
-#define LOG_DEBUG(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_DEBUG, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
-#define LOG_ERROR(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_ERROR, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
-#define LOG_INFO(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_INFO, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
