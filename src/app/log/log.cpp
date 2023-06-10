@@ -1,4 +1,4 @@
-#pragma once
+#include "log.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -11,9 +11,7 @@
 #include <Windows.h>
 #endif /* _WIN32 */
 
-namespace Logger
-{
-namespace Consts
+namespace Log
 {
 #ifdef _WIN32
 	const auto COLOR_ERR   = FOREGROUND_RED;
@@ -33,12 +31,7 @@ namespace Consts
 #endif /* DISABLE_COLOR_LOG */
 #endif /* _WIN32 */
 
-	const int LEVEL_ERROR  = 1;
-	const int LEVEL_INFO   = 2;
-	const int LEVEL_DEBUG  = 3;
-} /* namespace Consts */
-
-inline void write_log(int level, const char* fmt, ...)
+void write_log(int level, const char* fmt, ...)
 {
 	if(!fmt)
 	{
@@ -60,13 +53,13 @@ inline void write_log(int level, const char* fmt, ...)
 	{
 		case Consts::LEVEL_ERROR:
 		{
-			WIN32_SET_COLOR(hConsole, Consts::COLOR_ERR);
+			WIN32_SET_COLOR(hConsole, COLOR_ERR);
 			log_str.append("[ERROR]: ");
 			break;
 		}
 		case Consts::LEVEL_INFO:
 		{
-			WIN32_SET_COLOR(hConsole, Consts::COLOR_INFO);
+			WIN32_SET_COLOR(hConsole, COLOR_INFO);
 			log_str.append("[INFO]: ");
 			break;
 		}
@@ -106,9 +99,4 @@ inline void write_log(int level, const char* fmt, ...)
 
 	va_end(args);
 }
-} /* namespace Logger */
-
-/* TODO: Hide debug logs when built for release, OR add 'levels' of logging to write_log function */
-#define LOG_DEBUG(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_DEBUG, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
-#define LOG_ERROR(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_ERROR, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
-#define LOG_INFO(fmt, ...) do { Logger::write_log(Logger::Consts::LEVEL_INFO, "%s - " fmt, __FUNCTION__, ##__VA_ARGS__); } while(false)
+} /* namespace Log */

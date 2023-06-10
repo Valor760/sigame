@@ -1,5 +1,5 @@
 #include "window.h"
-#include "log.h"
+#include "log/log.h"
 
 namespace SIGame
 {

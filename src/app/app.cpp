@@ -1,9 +1,8 @@
 #include "app.h"
-#include "log.h"
+#include "log/log.h"
 #include "window.h"
 
 #include <exception>
-#include <format>
 #include <iostream>
 
 #include <imgui.h>
