@@ -99,4 +99,4 @@ void write_log(int level, const char* fmt, ...)
 
 	va_end(args);
 }
-} /* namespace Logger */
+} /* namespace Log */
