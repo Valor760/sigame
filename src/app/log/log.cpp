@@ -16,19 +16,19 @@ namespace Log
 #ifdef _WIN32
 	const auto COLOR_ERR   = FOREGROUND_RED;
 	const auto COLOR_INFO  = FOREGROUND_GREEN;
-#define WIN32_SET_COLOR(hConsole, color) SetConsoleTextAttribute(hConsole, color);
+	#define WIN32_SET_COLOR(hConsole, color) SetConsoleTextAttribute(hConsole, color);
 #else
-#ifndef DISABLE_COLOR_LOG
-	const char* COLOR_ERR    = "\033[31m";
-	const char* COLOR_INFO   = "\033[32m";
-	const char* COLOR_DEBUG  = "\033[34m";
-	const char* COLOR_STOP   = "\033[0m";
-#else
-	const char* COLOR_ERR    = "";
-	const char* COLOR_INFO   = "";
-	const char* COLOR_DEBUG  = "";
-	const char* COLOR_STOP   = "";
-#endif /* DISABLE_COLOR_LOG */
+	#ifndef DISABLE_COLOR_LOG
+		#define COLOR_ERR    "\033[31m"
+		#define COLOR_INFO   "\033[32m"
+		#define COLOR_DEBUG  "\033[34m"
+		#define COLOR_STOP   "\033[0m"
+	#else
+		#define COLOR_ERR    ""
+		#define COLOR_INFO   ""
+		#define COLOR_DEBUG  ""
+		#define COLOR_STOP   ""
+	#endif /* DISABLE_COLOR_LOG */
 #endif /* _WIN32 */
 
 void write_log(int level, const char* fmt, ...)
@@ -99,4 +99,13 @@ void write_log(int level, const char* fmt, ...)
 
 	va_end(args);
 }
+
+#ifdef _WIN32
+	#undef WIN32_SET_COLOR(hConsole, color)
+#else
+	#undef COLOR_ERR
+	#undef COLOR_INFO
+	#undef COLOR_DEBUG
+	#undef COLOR_STOP
+#endif /* _WIN32 */
 } /* namespace Log */
