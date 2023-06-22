@@ -26,6 +26,7 @@ class Window
 		static GLFWwindow* GetWindow();
 		static int GetWidth();
 		static int GetHeight();
+		static ImVec2 GetSize();
 
 	private:
 		static void GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height);

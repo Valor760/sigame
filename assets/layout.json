@@ -1,0 +1,30 @@
+{
+	"comments" : "Starting window",
+	"Layout": [{
+		"Name" : "Main Menu",
+		"Windows": [{
+			"Label" : "MainMenu",
+			"Size" : [1600, 900],
+			"Position" : [0, 0],
+			"Flags" : 0,
+			"Items" : [{
+				"Type" : "Button",
+				"Data" : {
+					"Label" : "Single Player",
+					"Size" : [900, 300],
+					"Position" : [100, 200],
+					"PressedCallbackName" : "TestButtonCallback"
+				}
+			},
+				{
+					"Type" : "Button",
+					"Data" : {
+						"Label" : "Multi Player",
+						"Size" : [200, 150],
+						"Position" : [300, 90],
+						"PressedCallbackName" : "TestButtonCallback"
+				}
+			}]
+		}]
+	}]
+}

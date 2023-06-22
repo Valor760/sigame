@@ -78,6 +78,11 @@ int Window::GetHeight()
 	return m_WindowHeight;
 }
 
+ImVec2 Window::GetSize()
+{
+	return ImVec2(m_WindowWidth, m_WindowHeight);
+}
+
 void Window::GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height)
 {
 	if(window != m_Window)

@@ -1,6 +1,6 @@
 #include "app.h"
-#include "log/log.h"
 #include "window.h"
+#include "core/layout.h"
 
 #include <exception>
 #include <iostream>
@@ -28,6 +28,8 @@ bool App::Init()
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 
+	Core::LayoutManager::LoadLayout("Main Menu");
+
 	return true;
 }
 
@@ -41,6 +43,7 @@ void App::Run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		Core::LayoutManager::DrawLayout();
 
 		// Render end
 		ImGui::Render();
