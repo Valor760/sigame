@@ -4,11 +4,10 @@ set(TARGET sigame)
 project(${TARGET})
 
 # Global vars
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(OUTPUT_LIB_DIR $<1:${LIB_DIR}>) # $<1:> to remove Debug/Release subdirs
-set(CMAKE_BUILD_TYPE "")
-set(BINARY_OUTPUT_DIR $<1:${CMAKE_CURRENT_SOURCE_DIR}/build/bin>)
+set(OUTPUT_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/$<1:lib>) # $<1:> to remove Debug/Release subdirs
+set(BINARY_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 set(EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
+set(ASSETS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 set(LIB_GLAD_PATH ${EXTERNAL_DIR}/glad/gl.c)
 
 
@@ -22,6 +21,9 @@ else()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+if(NOT DEFINED ${CMAKE_BUILD_TYPE})
+	set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 # Change default binary location
 # TODO: probably change it to different path?
@@ -48,7 +50,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # FIXME: For some reasons it fails to link on glfw first time
 # https://www.glfw.org/docs/latest/build_guide.html#build_link_cmake_source
-link_directories(${LIB_DIR})
+link_directories(${OUTPUT_LIB_DIR})
 
 # CMake modules
 add_subdirectory(${EXTERNAL_DIR}/glfw)

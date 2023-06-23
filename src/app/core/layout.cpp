@@ -17,7 +17,7 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 	if(m_Json.is_null())
 	{
 		/* TODO: Make relative from whole project or copy all assests to output dir */
-		std::ifstream json_file("../../assets/layout.json");
+		std::ifstream json_file("assets/layout.json");
 		m_Json = json::parse(json_file);
 
 		if(!m_Json.is_object())

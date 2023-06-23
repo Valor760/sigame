@@ -24,3 +24,6 @@ else()
 endif()
 
 target_link_libraries(${EXEC} PUBLIC ${LIBS})
+
+# Copy assets to the binary directory
+file(COPY ${ASSETS_PATH} DESTINATION ${BINARY_OUTPUT_DIR})
