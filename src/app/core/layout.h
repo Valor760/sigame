@@ -8,8 +8,8 @@
 namespace SIGame::Core
 {
 using json = nlohmann::json;
-/* TODO: In future, probably, some other type should be (maybe with args) */
 typedef void (*button_callback_t)(...);
+
 struct Button
 {
 	std::string Label;
@@ -36,7 +36,7 @@ struct LayoutWindow
 	ImVec2 Size;
 	ImVec2 Position;
 	ImGuiWindowFlags Flags;
-	std::vector<Item> Items;
+	std::vector<Item*> Items;
 };
 
 class LayoutManager
@@ -47,7 +47,12 @@ class LayoutManager
 		static bool DrawLayout();
 
 	private:
+		static bool applyLayout(const json& layout_data);
+
+	private:
 		static inline std::vector<LayoutWindow> m_CurrentLayoutStack = {};
 		static inline json m_Json = json(nullptr);
+
+		static std::unordered_map<std::string, void*> m_ButtonCallbackMap;
 };
 } /* namespace SIGame::Core */

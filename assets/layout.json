@@ -3,7 +3,7 @@
 	"Layout": [{
 		"Name" : "Main Menu",
 		"Windows": [{
-			"Label" : "MainMenu",
+			"Label" : "Background",
 			"Size" : [1600, 900],
 			"Position" : [0, 0],
 			"Flags" : 0,

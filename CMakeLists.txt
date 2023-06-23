@@ -12,10 +12,17 @@ set(LIB_GLAD_PATH ${EXTERNAL_DIR}/glad/gl.c)
 
 
 # Set flags according to the OS
+# TODO: Add optimization flags to release build
 if(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /Zc:preprocessor")
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+
+	endif()
 elseif(UNIX AND NOT APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++2a")
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+
+	endif()
 else()
 	message(FATAL_ERROR "Current OS is not supported!")
 endif()
