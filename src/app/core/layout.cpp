@@ -32,6 +32,34 @@ static std::unordered_map<std::string, ItemType> g_item_type_map = {
 	{"Button", ItemType::Button},
 };
 
+/* TODO: Expose possible flags in the header later */
+static std::unordered_map<std::string, ImGuiWindowFlags> g_window_flags_map = {
+	{"Flag_None",						ImGuiWindowFlags_None},
+	{"Flag_NoTitleBar",					ImGuiWindowFlags_NoTitleBar},
+	{"Flag_NoResize",					ImGuiWindowFlags_NoResize},
+	{"Flag_NoMove",						ImGuiWindowFlags_NoMove},
+	{"Flag_NoScrollbar",				ImGuiWindowFlags_NoScrollbar},
+	{"Flag_NoScrollWithMouse",			ImGuiWindowFlags_NoScrollWithMouse},
+	{"Flag_NoCollapse",					ImGuiWindowFlags_NoCollapse},
+	{"Flag_AlwaysAutoResize",			ImGuiWindowFlags_AlwaysAutoResize},
+	{"Flag_NoBackground",				ImGuiWindowFlags_NoBackground},
+	{"Flag_NoSavedSettings",			ImGuiWindowFlags_NoSavedSettings},
+	{"Flag_NoMouseInputs",				ImGuiWindowFlags_NoMouseInputs},
+	{"Flag_MenuBar",					ImGuiWindowFlags_MenuBar},
+	{"Flag_HorizontalScrollbar",		ImGuiWindowFlags_HorizontalScrollbar},
+	{"Flag_NoFocusOnAppearing",			ImGuiWindowFlags_NoFocusOnAppearing},
+	{"Flag_NoBringToFrontOnFocus",		ImGuiWindowFlags_NoBringToFrontOnFocus},
+	{"Flag_AlwaysVerticalScrollbar",	ImGuiWindowFlags_AlwaysVerticalScrollbar},
+	{"Flag_AlwaysHorizontalScrollbar",	ImGuiWindowFlags_AlwaysHorizontalScrollbar},
+	{"Flag_AlwaysUseWindowPadding",		ImGuiWindowFlags_AlwaysUseWindowPadding},
+	{"Flag_NoNavInputs",				ImGuiWindowFlags_NoNavInputs},
+	{"Flag_NoNavFocus",					ImGuiWindowFlags_NoNavFocus},
+	{"Flag_UnsavedDocument",			ImGuiWindowFlags_UnsavedDocument},
+	{"Flag_NoNav",						ImGuiWindowFlags_NoNav},
+	{"Flag_NoDecoration",				ImGuiWindowFlags_NoDecoration},
+	{"Flag_NoInputs",					ImGuiWindowFlags_NoInputs},
+};
+
 static ItemType get_item_type(const std::string& type_name)
 {
 	return g_item_type_map[type_name];
@@ -187,8 +215,27 @@ bool LayoutManager::applyLayout(const json& layout_data)
 
 		if(window.contains("Flags"))
 		{
-			/* TODO: Add suitable flag parsing for flags */
-			w.Flags = window["Flags"];
+			w.Flags = 0;
+
+			if(window["Flags"].is_array())
+			{
+				const std::vector<std::string>& window_flags = window["Flags"];
+				for(auto& flag : window_flags)
+				{
+					try
+					{
+						w.Flags |= g_window_flags_map[flag];
+					}
+					catch(...)
+					{
+						LOG_ERROR("Unknown window flag \'%s\' received. Skip.", flag.c_str());
+					}
+				}
+			}
+			else
+			{
+				LOG_ERROR("Expected array of flags, but got \'%s\' instead.", window["Flags"].type_name());
+			}
 		}
 		else
 		{
@@ -221,7 +268,6 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 {
 	if(m_Json.is_null())
 	{
-		/* TODO: Make relative from whole project or copy all assests to output dir */
 		std::ifstream json_file("assets/layout.json");
 		m_Json = json::parse(json_file);
 
@@ -232,7 +278,12 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 		}
 	}
 
-	/* TODO: Add check for null */
+	if(!m_Json.contains("Layout"))
+	{
+		LOG_ERROR("Provided JSON is invalid. Missing \"%s\" field in the root.", "Layout");
+		return false;
+	}
+
 	auto layouts = m_Json["Layout"];
 	json target_layout = json(nullptr);
 	for(auto& l : layouts)
