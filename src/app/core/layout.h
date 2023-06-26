@@ -8,7 +8,7 @@
 namespace SIGame::Core
 {
 using json = nlohmann::json;
-typedef void (*button_callback_t)(...);
+typedef void (*button_callback_t)(const std::vector<std::string>&);
 
 struct Button
 {
@@ -16,7 +16,7 @@ struct Button
 	ImVec2 Size;
 	ImVec2 Position; /* Upper left corner position */
 	button_callback_t pButtonPressedCallback;
-	/* TODO: Add arguments field, but dunno what type for now */
+	std::vector<std::string> CallbackArgs;
 };
 
 enum class ItemType

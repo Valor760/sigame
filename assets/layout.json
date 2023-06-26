@@ -27,7 +27,8 @@
 					"Label" : "Multi Player",
 					"Size" : [200, 150],
 					"Position" : [300, 90],
-					"PressedCallbackName" : "TestButtonCallback"
+					"PressedCallbackName" : "TestButtonCallback",
+					"Args" : ["qwe", "0", "324"]
 				}
 			}]
 		}]

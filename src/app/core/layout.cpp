@@ -3,19 +3,25 @@
 
 #include <fstream>
 
-#define GET_JSON_STR(x) (x.get<std::string>())
-#define GET_JSON_CSTR(x) (GET_JSON_STR(x).c_str())
+#define GET_JSON_TYPE(json, type) (json.get<type>())
+#define GET_JSON_CSTR(x) (GET_JSON_TYPE(x, std::string).c_str())
 #define GET_JSON_VEC2(x) (ImVec2(x[0], x[1]))
-#define GET_JSON_INT(x) (x.get<int>())
 
 /* TODO: Remove and make function*/
 #define ADD_CALLBACK_TO_MAP(func) { #func, (void*)func },
 
 namespace SIGame::Core
 {
-void TestButtonCallback()
+void TestButtonCallback(const std::vector<std::string>& args)
 {
 	LOG_INFO("Button pressed!!");
+
+	std::string arg_str = "";
+	for(auto& arg : args)
+	{
+		arg_str += arg + ", ";
+	}
+	LOG_INFO("Args passed: %s", arg_str.c_str());
 }
 
 static std::unordered_map<std::string, void*> m_ButtonCallbackMap = {
@@ -47,12 +53,11 @@ static std::string get_item_type(ItemType type_enum)
 /* FIXME: Either control the lifetime of these pointers or use std::unique_ptr */
 static Button* fill_button_item(const json& button)
 {
-	/* FIXME: Replace everything with try-catch, if the field is abscent */
 	Button* bt = new Button();
 
 	if(button.contains("Label"))
 	{
-		bt->Label = GET_JSON_STR(button["Label"]);
+		bt->Label = button["Label"];
 	}
 	else
 	{
@@ -85,12 +90,21 @@ static Button* fill_button_item(const json& button)
 	{
 		try
 		{
-			bt->pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[GET_JSON_STR(button["PressedCallbackName"])];
+			bt->pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[button["PressedCallbackName"]];
 		}
 		catch(...)
 		{
 			bt->pButtonPressedCallback = nullptr;
 			LOG_ERROR("Button \"%s\": Can't find \"%s\" callback function.");
+		}
+
+		if(button.contains("Args"))
+		{
+			bt->CallbackArgs = button["Args"];
+		}
+		else
+		{
+			bt->CallbackArgs = {};
 		}
 	}
 	else
@@ -105,7 +119,7 @@ static Button* fill_button_item(const json& button)
 static Item* fill_item(const json& item)
 {
 	Item* it = new Item();
-	it->Type = get_item_type(GET_JSON_STR(item["Type"]));
+	it->Type = get_item_type((std::string)item["Type"]);
 
 	switch(it->Type)
 	{
@@ -141,11 +155,11 @@ bool LayoutManager::applyLayout(const json& layout_data)
 		*/
 		if(window.contains("Label"))
 		{
-			w.Label = GET_JSON_STR(window["Label"]);
+			w.Label = window["Label"];
 		}
 		else
 		{
-			LOG_ERROR("Window doesn't contain \"Label\" field");
+			LOG_ERROR("Window doesn't contain \"%s\" field", "Label");
 			return false;
 		}
 
@@ -174,7 +188,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 		if(window.contains("Flags"))
 		{
 			/* TODO: Add suitable flag parsing for flags */
-			w.Flags = GET_JSON_INT(window["Flags"]);
+			w.Flags = window["Flags"];
 		}
 		else
 		{
@@ -213,7 +227,7 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 
 		if(!m_Json.is_object())
 		{
-			LOG_ERROR("Failed to load load JSON");
+			LOG_ERROR("Failed to load JSON");
 			return false;
 		}
 	}
@@ -248,7 +262,7 @@ void draw_button(Button* button)
 	{
 		if(button->pButtonPressedCallback)
 		{
-			button->pButtonPressedCallback();
+			button->pButtonPressedCallback(button->CallbackArgs);
 		}
 	}
 }
