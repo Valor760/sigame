@@ -101,7 +101,7 @@ void write_log(int level, const char* fmt, ...)
 }
 
 #ifdef _WIN32
-	#undef WIN32_SET_COLOR(hConsole, color)
+	#undef WIN32_SET_COLOR
 #else
 	#undef COLOR_ERR
 	#undef COLOR_INFO

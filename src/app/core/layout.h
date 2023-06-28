@@ -28,15 +28,44 @@ struct Item
 {
 	ItemType Type;
 	void* pItem;
+
+	/* Cleanup heap pointers */
+	~Item()
+	{
+		delete pItem;
+		pItem = nullptr;
+	}
 };
 
 struct LayoutWindow
 {
 	std::string Label;
 	ImVec2 Size;
-	ImVec2 Position;
+	ImVec2 Position; /* Upper left corner position */
 	ImGuiWindowFlags Flags;
 	std::vector<Item*> Items;
+
+	/* Cleanup all heap pointers on destruction */
+	~LayoutWindow()
+	{
+		for(auto item : Items)
+		{
+			delete item;
+			item = nullptr;
+		}
+	}
+
+	/* Very ugly, and needed only for std::remove in DrawLayout */
+	bool operator==(const LayoutWindow& right)
+	{
+		return
+			(this->Label		== right.Label)			&&
+			(this->Size.x		== right.Size.x)		&&
+			(this->Size.y		== right.Size.y)		&&
+			(this->Flags		== right.Flags)			&&
+			(this->Position.x	== right.Position.x)	&&
+			(this->Position.y	== right.Position.y);
+	}
 };
 
 class LayoutManager

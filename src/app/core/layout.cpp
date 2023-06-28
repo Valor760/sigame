@@ -2,16 +2,33 @@
 #include "app/window.h"
 
 #include <fstream>
+#include <algorithm>
 
 #define GET_JSON_TYPE(json, type) (json.get<type>())
 #define GET_JSON_CSTR(x) (GET_JSON_TYPE(x, std::string).c_str())
 #define GET_JSON_VEC2(x) (ImVec2(x[0], x[1]))
 
-/* TODO: Remove and make function*/
 #define ADD_CALLBACK_TO_MAP(func) { #func, (void*)func },
 
 namespace SIGame::Core
 {
+namespace JsonEntry
+{
+inline const char* Label			= "Label";
+inline const char* Size				= "Size";
+inline const char* Position			= "Position";
+inline const char* PressedCallback	= "PressedCallbackName";
+inline const char* CallbackArgs		= "Args";
+inline const char* ItemType			= "Type";
+inline const char* Data				= "Data";
+inline const char* Windows			= "Windows";
+inline const char* Flags			= "Flags";
+inline const char* Items			= "Items";
+inline const char* Layout			= "Layout";
+inline const char* Name				= "Name";
+inline const char* Button			= "Button";
+} /* namespace JsonEntry */
+
 void TestButtonCallback(const std::vector<std::string>& args)
 {
 	LOG_INFO("Button pressed!!");
@@ -24,16 +41,17 @@ void TestButtonCallback(const std::vector<std::string>& args)
 	LOG_INFO("Args passed: %s", arg_str.c_str());
 }
 
+/* TODO: Add API to add callbacks */
 static std::unordered_map<std::string, void*> m_ButtonCallbackMap = {
 	ADD_CALLBACK_TO_MAP(TestButtonCallback)
 };
 
-static std::unordered_map<std::string, ItemType> g_item_type_map = {
-	{"Button", ItemType::Button},
+static std::unordered_map<std::string, ItemType> g_ItemTypeMap = {
+	{JsonEntry::Button, ItemType::Button},
 };
 
 /* TODO: Expose possible flags in the header later */
-static std::unordered_map<std::string, ImGuiWindowFlags> g_window_flags_map = {
+static std::unordered_map<std::string, ImGuiWindowFlags> g_WindowFlagsMap = {
 	{"Flag_None",						ImGuiWindowFlags_None},
 	{"Flag_NoTitleBar",					ImGuiWindowFlags_NoTitleBar},
 	{"Flag_NoResize",					ImGuiWindowFlags_NoResize},
@@ -62,12 +80,12 @@ static std::unordered_map<std::string, ImGuiWindowFlags> g_window_flags_map = {
 
 static ItemType get_item_type(const std::string& type_name)
 {
-	return g_item_type_map[type_name];
+	return g_ItemTypeMap[type_name];
 }
 
 static std::string get_item_type(ItemType type_enum)
 {
-	for(auto& [key, val] : g_item_type_map)
+	for(auto& [key, val] : g_ItemTypeMap)
 	{
 		if(val == type_enum)
 		{
@@ -78,47 +96,46 @@ static std::string get_item_type(ItemType type_enum)
 	return "";
 }
 
-/* FIXME: Either control the lifetime of these pointers or use std::unique_ptr */
 static Button* fill_button_item(const json& button)
 {
 	Button* bt = new Button();
 
-	if(button.contains("Label"))
+	if(button.contains(JsonEntry::Label))
 	{
-		bt->Label = button["Label"];
+		bt->Label = button[JsonEntry::Label];
 	}
 	else
 	{
-		LOG_ERROR("Button doesn't have \"%s\" field!", "Label");
+		LOG_ERROR("Button doesn't have \"%s\" field!", JsonEntry::Label);
 		return nullptr;
 	}
 
-	if(button.contains("Size"))
+	if(button.contains(JsonEntry::Size))
 	{
-		bt->Size = GET_JSON_VEC2(button["Size"]);
+		bt->Size = GET_JSON_VEC2(button[JsonEntry::Size]);
 	}
 	else
 	{
-		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Don't know what size to choose.", bt->Label.c_str(), "Size");
+		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Don't know what size to choose.", bt->Label.c_str(), JsonEntry::Size);
 		return nullptr;
 	}
 
-	if(button.contains("Position"))
+	if(button.contains(JsonEntry::Position))
 	{
-		bt->Position = GET_JSON_VEC2(button["Position"]);
+		bt->Position = GET_JSON_VEC2(button[JsonEntry::Position]);
 	}
 	else
 	{
 		bt->Position = ImVec2(0, 0);
 		LOG_INFO("Button \"%s\" doesn't have \"%s\" field. Defaulting to (%d, %d)",
-			bt->Label.c_str(), "Position", (int)bt->Position.x, (int)bt->Position.y);
+			bt->Label.c_str(), JsonEntry::Position, (int)bt->Position.x, (int)bt->Position.y);
 	}
 
-	if(button.contains("PressedCallbackName"))
+	if(button.contains(JsonEntry::PressedCallback))
 	{
 		try
 		{
-			bt->pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[button["PressedCallbackName"]];
+			bt->pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[button[JsonEntry::PressedCallback]];
 		}
 		catch(...)
 		{
@@ -126,9 +143,9 @@ static Button* fill_button_item(const json& button)
 			LOG_ERROR("Button \"%s\": Can't find \"%s\" callback function.");
 		}
 
-		if(button.contains("Args"))
+		if(button.contains(JsonEntry::CallbackArgs))
 		{
-			bt->CallbackArgs = button["Args"];
+			bt->CallbackArgs = button[JsonEntry::CallbackArgs];
 		}
 		else
 		{
@@ -138,7 +155,7 @@ static Button* fill_button_item(const json& button)
 	else
 	{
 		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Why such useless button exists?",
-			bt->Label.c_str(), "PressedCallbackName");
+			bt->Label.c_str(), JsonEntry::PressedCallback);
 	}
 
 	return bt;
@@ -147,13 +164,13 @@ static Button* fill_button_item(const json& button)
 static Item* fill_item(const json& item)
 {
 	Item* it = new Item();
-	it->Type = get_item_type((std::string)item["Type"]);
+	it->Type = get_item_type(std::string(item[JsonEntry::ItemType]));
 
 	switch(it->Type)
 	{
 		case ItemType::Button:
 		{
-			it->pItem = fill_button_item(item["Data"]);
+			it->pItem = fill_button_item(item[JsonEntry::Data]);
 			break;
 		}
 		default:
@@ -169,62 +186,62 @@ static Item* fill_item(const json& item)
 
 bool LayoutManager::applyLayout(const json& layout_data)
 {
-	LOG_DEBUG("Applying layout \"%s\"", GET_JSON_CSTR(layout_data["Name"]));
+	LOG_DEBUG("Applying layout \"%s\"", GET_JSON_CSTR(layout_data[JsonEntry::Name]));
 
-	for(auto& window : layout_data["Windows"])
+	for(auto& window : layout_data[JsonEntry::Windows])
 	{
-		/* FIXME: Add constants/defines for json entries */
-		LayoutWindow w;
+		/* Static, so the object is not destroyed at the end of the function and all pointers won't be missed */
+		static LayoutWindow w = LayoutWindow();
 
-		/* Unfortunately, json library crashes with assert if the element is not present, so can't use try-catch */
 		/*
+			Unfortunately, json library crashes with assert if the element is not present, so can't use try-catch
 			TODO?: I can rewrite that block of code to not use assertion, but this
 			will mean, that we cannot update this library at all.
 		*/
-		if(window.contains("Label"))
+		if(window.contains(JsonEntry::Label))
 		{
-			w.Label = window["Label"];
+			w.Label = window[JsonEntry::Label];
 		}
 		else
 		{
-			LOG_ERROR("Window doesn't contain \"%s\" field", "Label");
+			LOG_ERROR("Window doesn't contain \"%s\" field", JsonEntry::Label);
 			return false;
 		}
 
-		if(window.contains("Size"))
+		if(window.contains(JsonEntry::Size))
 		{
-			w.Size = GET_JSON_VEC2(window["Size"]);
+			w.Size = GET_JSON_VEC2(window[JsonEntry::Size]);
 		}
 		else
 		{
 			w.Size = Window::GetSize();
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to window size (%d, %d)",
-				w.Label.c_str(), "Size", (int)w.Size.x, (int)w.Size.y);
+				w.Label.c_str(), JsonEntry::Size, (int)w.Size.x, (int)w.Size.y);
 		}
 
-		if(window.contains("Position"))
+		if(window.contains(JsonEntry::Position))
 		{
-			w.Position = GET_JSON_VEC2(window["Position"]);
+			w.Position = GET_JSON_VEC2(window[JsonEntry::Position]);
 		}
 		else
 		{
 			w.Position = ImVec2(0, 0);
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to (%d, %d)",
-				w.Label.c_str(), "Position", (int)w.Position.x, (int)w.Position.y);
+				w.Label.c_str(), JsonEntry::Position, (int)w.Position.x, (int)w.Position.y);
 		}
 
-		if(window.contains("Flags"))
+		if(window.contains(JsonEntry::Flags))
 		{
 			w.Flags = 0;
 
-			if(window["Flags"].is_array())
+			if(window[JsonEntry::Flags].is_array())
 			{
-				const std::vector<std::string>& window_flags = window["Flags"];
+				const std::vector<std::string>& window_flags = window[JsonEntry::Flags];
 				for(auto& flag : window_flags)
 				{
 					try
 					{
-						w.Flags |= g_window_flags_map[flag];
+						w.Flags |= g_WindowFlagsMap[flag];
 					}
 					catch(...)
 					{
@@ -234,19 +251,19 @@ bool LayoutManager::applyLayout(const json& layout_data)
 			}
 			else
 			{
-				LOG_ERROR("Expected array of flags, but got \'%s\' instead.", window["Flags"].type_name());
+				LOG_ERROR("Expected array of flags, but got \'%s\' instead.", window[JsonEntry::Flags].type_name());
 			}
 		}
 		else
 		{
 			w.Flags = 0;
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to %d",
-				w.Label.c_str(), "Flags", w.Flags);
+				w.Label.c_str(), JsonEntry::Flags, w.Flags);
 		}
 
-		if(window.contains("Items"))
+		if(window.contains(JsonEntry::Items))
 		{
-			auto items = window["Items"];
+			auto items = window[JsonEntry::Items];
 			for(auto& item : items)
 			{
 				w.Items.push_back(fill_item(item));
@@ -255,7 +272,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 		else
 		{
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Array will be empty.", 
-				w.Label.c_str(), "Items");
+				w.Label.c_str(), JsonEntry::Items);
 		}
 
 		m_CurrentLayoutStack.push_back(w);
@@ -278,17 +295,17 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 		}
 	}
 
-	if(!m_Json.contains("Layout"))
+	if(!m_Json.contains(JsonEntry::Layout))
 	{
-		LOG_ERROR("Provided JSON is invalid. Missing \"%s\" field in the root.", "Layout");
+		LOG_ERROR("Provided JSON is invalid. Missing \"%s\" field in the root.", JsonEntry::Layout);
 		return false;
 	}
 
-	auto layouts = m_Json["Layout"];
+	auto layouts = m_Json[JsonEntry::Layout];
 	json target_layout = json(nullptr);
 	for(auto& l : layouts)
 	{
-		if(l["Name"] == layout_name)
+		if(l[JsonEntry::Name] == layout_name)
 		{
 			LOG_DEBUG("Found layout with name \"%s\"", layout_name.c_str());
 			target_layout = l;
@@ -307,7 +324,19 @@ bool LayoutManager::LoadLayout(const std::string& layout_name)
 
 void draw_button(Button* button)
 {
-	/* TODO: Do an input check (if pos or size is 0, and callback nullptr) */
+	if(!button)
+	{
+		return;
+	}
+
+	if(button->Size.x <= 0 || button->Size.y <= 0)
+	{
+		/* Remove button from rendering */
+		LOG_DEBUG("Button \'%s\' has 0 size. Removing it from rendering!", button->Label);
+		delete button;
+		button = nullptr;
+	}
+
 	ImGui::SetCursorPos(button->Position);
 	if(ImGui::Button(button->Label.c_str(), button->Size))
 	{
@@ -323,7 +352,17 @@ bool LayoutManager::DrawLayout()
 	for(auto& window : m_CurrentLayoutStack)
 	{
 		/* Setup and draw window */
-		/* TODO: Do an input check (if pos or size is 0) */
+		if(window.Size.x <= 0 || window.Size.y <= 0)
+		{
+			/* Skip render if window size is 0. */
+			LOG_DEBUG("Window \'%s\' has 0 size. Removing it from render stack!", window.Label);
+			m_CurrentLayoutStack.erase(
+				std::remove(m_CurrentLayoutStack.begin(), m_CurrentLayoutStack.end(), window),
+				m_CurrentLayoutStack.end()
+				);
+			continue;
+		}
+
 		ImGui::SetNextWindowPos(window.Position);
 		ImGui::SetNextWindowSize(window.Size);
 		ImGui::Begin(window.Label.c_str(), nullptr, window.Flags);
@@ -339,7 +378,7 @@ bool LayoutManager::DrawLayout()
 				}
 				default:
 				{
-					LOG_ERROR("Unknown item type received for rendering [%d]", item->Type);
+					LOG_DEBUG("Unknown item type received for rendering [%d]", item->Type);
 					break;
 				}
 			}
