@@ -32,8 +32,19 @@ struct Item
 	/* Cleanup heap pointers */
 	~Item()
 	{
-		delete pItem;
-		pItem = nullptr;
+		// switch(Type)
+		// {
+		// 	case ItemType::Button:
+		// 	{
+		// 		delete (Button*)pItem;
+		// 		break;
+		// 	}
+		// 	default:
+		// 	{
+		// 		LOG_ERROR("Can't delete item pointer - unknown type [%d]", Type);
+		// 	}
+		// }
+		// pItem = nullptr;
 	}
 };
 
@@ -48,40 +59,44 @@ struct LayoutWindow
 	/* Cleanup all heap pointers on destruction */
 	~LayoutWindow()
 	{
-		for(auto item : Items)
+		for(auto* item : Items)
 		{
 			delete item;
 			item = nullptr;
 		}
 	}
-
-	/* Very ugly, and needed only for std::remove in DrawLayout */
-	bool operator==(const LayoutWindow& right)
-	{
-		return
-			(this->Label		== right.Label)			&&
-			(this->Size.x		== right.Size.x)		&&
-			(this->Size.y		== right.Size.y)		&&
-			(this->Flags		== right.Flags)			&&
-			(this->Position.x	== right.Position.x)	&&
-			(this->Position.y	== right.Position.y);
-	}
 };
 
 class LayoutManager
 {
-	/* TODO: Remove default constructors, call explicitly destructor somewhere */
 	public:
-		static bool LoadLayout(const std::string& layout_name);
-		static bool DrawLayout();
+		static LayoutManager& Get()
+		{
+			static LayoutManager instance;
+			return instance;
+		}
+
+		static inline bool LoadLayout(const std::string& layout_name)
+		{
+			return Get().LoadLayoutImpl(layout_name);
+		}
+		static inline bool DrawLayout()
+		{
+			return Get().DrawLayoutImpl();
+		}
 
 	private:
-		static bool applyLayout(const json& layout_data);
+		LayoutManager() {}
+		LayoutManager(const LayoutManager&) = delete;
+
+		bool LoadLayoutImpl(const std::string& layout_name);
+		bool DrawLayoutImpl();
+		bool applyLayout(const json& layout_data);
 
 	private:
-		static inline std::vector<LayoutWindow> m_CurrentLayoutStack = {};
-		static inline json m_Json = json(nullptr);
+		std::vector<LayoutWindow*> m_CurrentLayoutStack = {};
+		json m_Json = json(nullptr);
 
-		static std::unordered_map<std::string, void*> m_ButtonCallbackMap;
+		std::unordered_map<std::string, void*> m_ButtonCallbackMap;
 };
 } /* namespace SIGame::Core */

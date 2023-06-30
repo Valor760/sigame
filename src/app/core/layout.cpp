@@ -190,8 +190,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 
 	for(auto& window : layout_data[JsonEntry::Windows])
 	{
-		/* Static, so the object is not destroyed at the end of the function and all pointers won't be missed */
-		static LayoutWindow w = LayoutWindow();
+		LayoutWindow* w = new LayoutWindow();
 
 		/*
 			Unfortunately, json library crashes with assert if the element is not present, so can't use try-catch
@@ -200,7 +199,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 		*/
 		if(window.contains(JsonEntry::Label))
 		{
-			w.Label = window[JsonEntry::Label];
+			w->Label = window[JsonEntry::Label];
 		}
 		else
 		{
@@ -210,29 +209,29 @@ bool LayoutManager::applyLayout(const json& layout_data)
 
 		if(window.contains(JsonEntry::Size))
 		{
-			w.Size = GET_JSON_VEC2(window[JsonEntry::Size]);
+			w->Size = GET_JSON_VEC2(window[JsonEntry::Size]);
 		}
 		else
 		{
-			w.Size = Window::GetSize();
+			w->Size = Window::GetSize();
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to window size (%d, %d)",
-				w.Label.c_str(), JsonEntry::Size, (int)w.Size.x, (int)w.Size.y);
+				w->Label.c_str(), JsonEntry::Size, (int)w->Size.x, (int)w->Size.y);
 		}
 
 		if(window.contains(JsonEntry::Position))
 		{
-			w.Position = GET_JSON_VEC2(window[JsonEntry::Position]);
+			w->Position = GET_JSON_VEC2(window[JsonEntry::Position]);
 		}
 		else
 		{
-			w.Position = ImVec2(0, 0);
+			w->Position = ImVec2(0, 0);
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to (%d, %d)",
-				w.Label.c_str(), JsonEntry::Position, (int)w.Position.x, (int)w.Position.y);
+				w->Label.c_str(), JsonEntry::Position, (int)w->Position.x, (int)w->Position.y);
 		}
 
 		if(window.contains(JsonEntry::Flags))
 		{
-			w.Flags = 0;
+			w->Flags = 0;
 
 			if(window[JsonEntry::Flags].is_array())
 			{
@@ -241,7 +240,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 				{
 					try
 					{
-						w.Flags |= g_WindowFlagsMap[flag];
+						w->Flags |= g_WindowFlagsMap[flag];
 					}
 					catch(...)
 					{
@@ -256,9 +255,9 @@ bool LayoutManager::applyLayout(const json& layout_data)
 		}
 		else
 		{
-			w.Flags = 0;
+			w->Flags = 0;
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Defaulting to %d",
-				w.Label.c_str(), JsonEntry::Flags, w.Flags);
+				w->Label.c_str(), JsonEntry::Flags, w->Flags);
 		}
 
 		if(window.contains(JsonEntry::Items))
@@ -266,13 +265,13 @@ bool LayoutManager::applyLayout(const json& layout_data)
 			auto items = window[JsonEntry::Items];
 			for(auto& item : items)
 			{
-				w.Items.push_back(fill_item(item));
+				w->Items.push_back(fill_item(item));
 			}
 		}
 		else
 		{
 			LOG_INFO("Window \"%s\" doesn't have \"%s\" field. Array will be empty.", 
-				w.Label.c_str(), JsonEntry::Items);
+				w->Label.c_str(), JsonEntry::Items);
 		}
 
 		m_CurrentLayoutStack.push_back(w);
@@ -281,7 +280,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 	return true;
 }
 
-bool LayoutManager::LoadLayout(const std::string& layout_name)
+bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 {
 	if(m_Json.is_null())
 	{
@@ -347,15 +346,15 @@ void draw_button(Button* button)
 	}
 }
 
-bool LayoutManager::DrawLayout()
+bool LayoutManager::DrawLayoutImpl()
 {
 	for(auto& window : m_CurrentLayoutStack)
 	{
 		/* Setup and draw window */
-		if(window.Size.x <= 0 || window.Size.y <= 0)
+		if(window->Size.x <= 0 || window->Size.y <= 0)
 		{
-			/* Skip render if window size is 0. */
-			LOG_DEBUG("Window \'%s\' has 0 size. Removing it from render stack!", window.Label);
+			/* Remove window from render if window size is 0. */
+			LOG_DEBUG("Window \'%s\' has 0 size. Removing it from render stack!", window->Label);
 			m_CurrentLayoutStack.erase(
 				std::remove(m_CurrentLayoutStack.begin(), m_CurrentLayoutStack.end(), window),
 				m_CurrentLayoutStack.end()
@@ -363,11 +362,11 @@ bool LayoutManager::DrawLayout()
 			continue;
 		}
 
-		ImGui::SetNextWindowPos(window.Position);
-		ImGui::SetNextWindowSize(window.Size);
-		ImGui::Begin(window.Label.c_str(), nullptr, window.Flags);
+		ImGui::SetNextWindowPos(window->Position);
+		ImGui::SetNextWindowSize(window->Size);
+		ImGui::Begin(window->Label.c_str(), nullptr, window->Flags);
 
-		for(auto& item : window.Items)
+		for(auto& item : window->Items)
 		{
 			switch(item->Type)
 			{
