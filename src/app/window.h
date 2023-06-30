@@ -14,27 +14,43 @@ class Window
 {
 	public:
 		/* Delete all constructors */
-		Window()                   = delete;
 		Window(Window&&)           = delete;
 		Window(const Window&)      = delete;
-		Window operator=(Window&)  = delete;
-		~Window() = delete;
 
-		static bool Init(int width, int height);
-		static bool DeInit();
+		static inline Window& Get()
+		{
+			static Window instance;
+			return instance;
+		}
+
+		static inline bool Init(int width, int height)
+		{
+			return Get().InitImpl(width, height);
+		}
+		static inline bool DeInit()
+		{
+			return Get().DeInitImpl();
+		}
 
 		static GLFWwindow* GetWindow();
 		static int GetWidth();
 		static int GetHeight();
+
 		static ImVec2 GetSize();
+		static void SetSize(ImVec2 new_size);
 
 	private:
-		static void GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height);
+		Window() {}
+
+		bool InitImpl(int width, int height);
+		bool DeInitImpl();
 
 	private:
-		static inline int m_WindowWidth = 0;
-		static inline int m_WindowHeight = 0;
-		static inline GLFWwindow* m_Window = nullptr;
+		static Window m_WindowInstace;
+
+		int m_WindowWidth = 0;
+		int m_WindowHeight = 0;
+		GLFWwindow* m_Window = nullptr;
 
 };
 } /* namespace SIGame */

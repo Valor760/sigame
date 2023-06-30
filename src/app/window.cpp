@@ -3,7 +3,15 @@
 
 namespace SIGame
 {
-bool Window::Init(int width, int height)
+void GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height)
+{
+	ImVec2 prev_size = Window::GetSize();
+	LOG_DEBUG("Window size changed: [prev %dx%d] [new %dx%d]", (int)prev_size.x, (int)prev_size.y, new_width, new_height);
+
+	Window::SetSize(ImVec2(new_width, new_height));
+}
+
+bool Window::InitImpl(int width, int height)
 {
 	if(width <= 0 || height <= 0)
 	{
@@ -14,6 +22,7 @@ bool Window::Init(int width, int height)
 		TODO: Get screen resolution. If width and height provided are greater than screen res,
 		then crop to the screen res.
 	*/
+	
 	m_WindowWidth = width;
 	m_WindowHeight = height;
 
@@ -53,7 +62,7 @@ bool Window::Init(int width, int height)
 	return true;
 }
 
-bool Window::DeInit()
+bool Window::DeInitImpl()
 {
 	if(m_Window)
 	{
@@ -65,35 +74,29 @@ bool Window::DeInit()
 
 GLFWwindow* Window::GetWindow()
 {
-	return m_Window;
+	return Get().m_Window;
 }
 
 int Window::GetWidth()
 {
-	return m_WindowWidth;
+	return Get().m_WindowWidth;
 }
 
 int Window::GetHeight()
 {
-	return m_WindowHeight;
+	return Get().m_WindowHeight;
 }
 
 ImVec2 Window::GetSize()
 {
-	return ImVec2(m_WindowWidth, m_WindowHeight);
+	Window& instance = Get();
+	return ImVec2(instance.m_WindowWidth, instance.m_WindowHeight);
 }
 
-void Window::GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height)
+void Window::SetSize(ImVec2 new_size)
 {
-	if(window != m_Window)
-	{
-		LOG_DEBUG("Unknown window received: curr=%p recv=%p", m_Window, window);
-		return;
-	}
-
-	LOG_DEBUG("Window size changed: [prev %dx%d] [new %dx%d]", m_WindowWidth, m_WindowHeight, new_width, new_height);
-
-	m_WindowWidth = new_width;
-	m_WindowHeight = new_height;
+	Window& instance = Get();
+	instance.m_WindowWidth = (int)new_size.x;
+	instance.m_WindowHeight = (int)new_size.y;
 }
 } /* namespace SIGame */
