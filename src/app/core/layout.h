@@ -5,6 +5,9 @@
 
 #include <vector>
 
+#define ADD_BUTTON_CALLBACK(func) (void*)func, #func
+#define BUTTON_CALLBACK_FUNC(func) void func (const std::vector<std::string>& args)
+
 namespace SIGame::Core
 {
 using json = nlohmann::json;
@@ -74,6 +77,8 @@ class LayoutManager
 			return Get().DrawLayoutImpl();
 		}
 
+		static void AddButtonCallback(void* func, std::string func_name);
+
 	private:
 		LayoutManager() {}
 		LayoutManager(const LayoutManager&) = delete;
@@ -85,7 +90,5 @@ class LayoutManager
 	private:
 		std::vector<LayoutWindow*> m_CurrentLayoutStack = {};
 		json m_Json = json(nullptr);
-
-		std::unordered_map<std::string, void*> m_ButtonCallbackMap;
 };
 } /* namespace SIGame::Core */

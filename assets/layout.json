@@ -3,31 +3,50 @@
 		"Name" : "Main Menu",
 		"Windows": [{
 			"Label" : "Window with Background",
-			"Position" : [0, 0],
 			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"]
 		},
 		{
 			"Label" : "Window with Buttons",
-			"Size" : [1600, 900],
-			"Position" : [0, 0],
 			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"],
-			"Items" : [{
+			"Items" : [
+			{
 				"Type" : "Button",
 				"Data" : {
 					"Label" : "Single Player",
-					"Size" : [900, 300],
-					"Position" : [100, 200],
-					"PressedCallbackName" : "TestButtonCallback"
+					"Size" : [400, 50],
+					"Position" : [600, 250],
+					"PressedCallbackName" : "SwitchLayout",
+					"Args" : ["Single Player"]
 				}
 			},
-				{
+			{
 				"Type" : "Button",
 				"Data" : {
 					"Label" : "Multi Player",
-					"Size" : [200, 150],
-					"Position" : [300, 90],
-					"PressedCallbackName" : "TestButtonCallback",
-					"Args" : ["qwe", "0", "324"]
+					"Size" : [400, 50],
+					"Position" : [600, 325],
+					"PressedCallbackName" : "SwitchLayout",
+					"Args" : ["Multi Player"]
+				}
+			},
+			{
+				"Type" : "Button",
+				"Data" : {
+					"Label" : "Settings",
+					"Size" : [400, 50],
+					"Position" : [600, 400],
+					"PressedCallbackName" : "SwitchLayout",
+					"Args" : ["Settings"]
+				}
+			},
+			{
+				"Type" : "Button",
+				"Data" : {
+					"Label" : "Exit",
+					"Size" : [400, 50],
+					"Position" : [600, 475],
+					"PressedCallbackName" : "SetWindowShouldClose",
+					"Args" : []
 				}
 			}]
 		}]

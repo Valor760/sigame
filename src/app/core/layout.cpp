@@ -8,8 +8,6 @@
 #define GET_JSON_CSTR(x) (GET_JSON_TYPE(x, std::string).c_str())
 #define GET_JSON_VEC2(x) (ImVec2(x[0], x[1]))
 
-#define ADD_CALLBACK_TO_MAP(func) { #func, (void*)func },
-
 namespace SIGame::Core
 {
 namespace JsonEntry
@@ -29,22 +27,7 @@ inline const char* Name				= "Name";
 inline const char* Button			= "Button";
 } /* namespace JsonEntry */
 
-void TestButtonCallback(const std::vector<std::string>& args)
-{
-	LOG_INFO("Button pressed!!");
-
-	std::string arg_str = "";
-	for(auto& arg : args)
-	{
-		arg_str += arg + ", ";
-	}
-	LOG_INFO("Args passed: %s", arg_str.c_str());
-}
-
-/* TODO: Add API to add callbacks */
-static std::unordered_map<std::string, void*> m_ButtonCallbackMap = {
-	ADD_CALLBACK_TO_MAP(TestButtonCallback)
-};
+static std::unordered_map<std::string, void*> m_ButtonCallbackMap;
 
 static std::unordered_map<std::string, ItemType> g_ItemTypeMap = {
 	{JsonEntry::Button, ItemType::Button},
@@ -280,6 +263,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 	return true;
 }
 
+/* FIXME: Create custom exception class and make everything using exceptions */
 bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 {
 	if(m_Json.is_null())
@@ -387,6 +371,11 @@ bool LayoutManager::DrawLayoutImpl()
 	}
 
 	return true;
+}
+
+void LayoutManager::AddButtonCallback(void* func, std::string func_name)
+{
+	m_ButtonCallbackMap[func_name] = func;
 }
 
 } /* namespace SIGame::Core */
