@@ -32,19 +32,8 @@ struct Item
 	/* Cleanup heap pointers */
 	~Item()
 	{
-		// switch(Type)
-		// {
-		// 	case ItemType::Button:
-		// 	{
-		// 		delete (Button*)pItem;
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		LOG_ERROR("Can't delete item pointer - unknown type [%d]", Type);
-		// 	}
-		// }
-		// pItem = nullptr;
+		delete pItem;
+		pItem = nullptr;
 	}
 };
 
