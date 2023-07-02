@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string>
 #include <iostream>
+#include <memory>
 
 /* PROJECT INCLUDES */
 #include "log/log.h"

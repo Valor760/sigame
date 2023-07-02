@@ -144,9 +144,9 @@ static Button* fill_button_item(const json& button)
 	return bt;
 }
 
-static Item* fill_item(const json& item)
+static std::shared_ptr<Item> fill_item(const json& item)
 {
-	Item* it = new Item();
+	std::shared_ptr<Item> it = std::make_shared<Item>();
 	it->Type = get_item_type(std::string(item[JsonEntry::ItemType]));
 
 	switch(it->Type)
@@ -173,7 +173,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 
 	for(auto& window : layout_data[JsonEntry::Windows])
 	{
-		LayoutWindow* w = new LayoutWindow();
+		std::shared_ptr<LayoutWindow> w = std::make_shared<LayoutWindow>();
 
 		/*
 			Unfortunately, json library crashes with assert if the element is not present, so can't use try-catch

@@ -46,17 +46,7 @@ struct LayoutWindow
 	ImVec2 Size;
 	ImVec2 Position; /* Upper left corner position */
 	ImGuiWindowFlags Flags;
-	std::vector<Item*> Items;
-
-	/* Cleanup all heap pointers on destruction */
-	~LayoutWindow()
-	{
-		for(auto* item : Items)
-		{
-			delete item;
-			item = nullptr;
-		}
-	}
+	std::vector<std::shared_ptr<Item>> Items;
 };
 
 class LayoutManager
@@ -88,7 +78,7 @@ class LayoutManager
 		bool applyLayout(const json& layout_data);
 
 	private:
-		std::vector<LayoutWindow*> m_CurrentLayoutStack = {};
+		std::vector<std::shared_ptr<LayoutWindow>> m_CurrentLayoutStack = {};
 		json m_Json = json(nullptr);
 };
 } /* namespace SIGame::Core */
