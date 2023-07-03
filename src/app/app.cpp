@@ -67,8 +67,8 @@ void App::Run()
 		// Render end
 		ImGui::Render();
 		glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
-		glClearColor(0.5, 0.33, 0.7, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// glClearColor(0.5, 0.33, 0.7, 1.0);
+		// glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(Window::GetWindow());
 	}

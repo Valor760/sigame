@@ -50,5 +50,27 @@
 				}
 			}]
 		}]
+	},
+	{
+		"Name" : "Single Player",
+		"Windows" : [{
+			"Label" : "SP: Window with Background",
+			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"]
+		},
+		{
+			"Label" : "SP: Window with Functionality",
+			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"],
+			"Items" : [
+			{
+				"Type" : "Button",
+				"Data" : {
+					"Label" : "Single Player",
+					"Size" : [400, 50],
+					"Position" : [600, 250],
+					"PressedCallbackName" : "SwitchLayout",
+					"Args" : ["Single Player"]
+				}
+			}]
+		}]
 	}]
 }

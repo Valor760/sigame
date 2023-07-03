@@ -25,12 +25,14 @@ inline const char* Items			= "Items";
 inline const char* Layout			= "Layout";
 inline const char* Name				= "Name";
 inline const char* Button			= "Button";
+inline const char* Text				= "Text";
 } /* namespace JsonEntry */
 
 static std::unordered_map<std::string, void*> m_ButtonCallbackMap;
 
 static std::unordered_map<std::string, ItemType> g_ItemTypeMap = {
 	{JsonEntry::Button, ItemType::Button},
+	{JsonEntry::Text, ItemType::Text},
 };
 
 /* TODO: Expose possible flags in the header later */
@@ -144,6 +146,36 @@ static Button* fill_button_item(const json& button)
 	return bt;
 }
 
+static Text* fill_text_item(const json& text)
+{
+	Text* txt = new Text();
+
+	if(text.contains(JsonEntry::Label))
+	{
+		txt->Label = text[JsonEntry::Label];
+	}
+	else
+	{
+		LOG_ERROR("Cannot find text(Label) for text field");
+		return nullptr;
+	}
+
+	if(text.contains(JsonEntry::Position))
+	{
+		txt->Position = GET_JSON_VEC2(text[JsonEntry::Position]);
+	}
+	else
+	{
+		txt->Position = ImVec2(0, 0);
+		LOG_DEBUG("Some text[\"%s...\"] doesn't have position. Defaulting to (%d, %d)",
+			txt->Label.substr(0, 20).c_str(),
+			(int)txt->Position.x,
+			(int)txt->Position.y);
+	}
+
+	return txt;
+}
+
 static std::shared_ptr<Item> fill_item(const json& item)
 {
 	std::shared_ptr<Item> it = std::make_shared<Item>();
@@ -154,6 +186,11 @@ static std::shared_ptr<Item> fill_item(const json& item)
 		case ItemType::Button:
 		{
 			it->pItem = fill_button_item(item[JsonEntry::Data]);
+			break;
+		}
+		case ItemType::Text:
+		{
+			it->pItem = fill_text_item(item[JsonEntry::Data]);
 			break;
 		}
 		default:
@@ -170,6 +207,12 @@ static std::shared_ptr<Item> fill_item(const json& item)
 bool LayoutManager::applyLayout(const json& layout_data)
 {
 	LOG_DEBUG("Applying layout \"%s\"", GET_JSON_CSTR(layout_data[JsonEntry::Name]));
+
+	/* Empty current layout stack */
+	if(m_CurrentLayoutStack.size())
+	{
+		m_CurrentLayoutStack.clear();
+	}
 
 	for(auto& window : layout_data[JsonEntry::Windows])
 	{
@@ -305,7 +348,8 @@ bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 	return applyLayout(target_layout);
 }
 
-void draw_button(Button* button)
+/* TODO: Move all 'draw' functions to separate file/renderer class */
+static void draw_button(Button* button)
 {
 	if(!button)
 	{
@@ -320,6 +364,7 @@ void draw_button(Button* button)
 		button = nullptr;
 	}
 
+	/* TODO: Add ImGui::PushStyleColor */
 	ImGui::SetCursorPos(button->Position);
 	if(ImGui::Button(button->Label.c_str(), button->Size))
 	{
@@ -350,7 +395,7 @@ bool LayoutManager::DrawLayoutImpl()
 		ImGui::SetNextWindowSize(window->Size);
 		ImGui::Begin(window->Label.c_str(), nullptr, window->Flags);
 
-		for(auto& item : window->Items)
+		for(auto item : window->Items)
 		{
 			switch(item->Type)
 			{

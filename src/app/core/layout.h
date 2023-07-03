@@ -13,6 +13,11 @@ namespace SIGame::Core
 using json = nlohmann::json;
 typedef void (*button_callback_t)(const std::vector<std::string>&);
 
+enum class ItemType
+{
+	Button, Text
+};
+
 struct Button
 {
 	std::string Label;
@@ -22,9 +27,12 @@ struct Button
 	std::vector<std::string> CallbackArgs;
 };
 
-enum class ItemType
+struct Text
 {
-	Button,
+	std::string Label;
+	ImVec2 Position; /* Upper left corner position */
+	// float FontSize;
+	// ImFontAtlas Font;
 };
 
 struct Item
