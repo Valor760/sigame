@@ -1,10 +1,12 @@
-#include <iostream>
-#include <imgui.h>
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
+#include "app/app.h"
 
-
-int main() {
-	std::cout << "Hello World!\n";
-	return 0;
+int main()
+{
+	SIGame::App app{};
+	if(app.Init())
+	{
+		app.Run();
+		return 0;
+	}
+	return -1;
 }
