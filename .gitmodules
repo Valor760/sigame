@@ -4,3 +4,6 @@
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "elzip"]
+	path = external/elzip
+	url = https://github.com/Valor760/11Zip.git
