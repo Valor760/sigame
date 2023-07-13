@@ -1,9 +1,9 @@
 #pragma once
 #include "common.h"
 
-namespace SIGame
+namespace SIGame::App
 {
-class App
+class MainApp
 {
 	public:
 		bool Init();

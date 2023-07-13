@@ -58,6 +58,7 @@ include_directories(${EXTERNAL_DIR})
 include_directories(${EXTERNAL_DIR}/imgui)
 include_directories(${EXTERNAL_DIR}/imgui/backends)
 include_directories(${EXTERNAL_DIR}/nlohmann)
+include_directories(${EXTERNAL_DIR}/elzip/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # FIXME: For some reasons it fails to link on glfw first time
@@ -66,4 +67,5 @@ link_directories(${OUTPUT_LIB_DIR})
 
 # CMake modules
 add_subdirectory(${EXTERNAL_DIR}/glfw)
+add_subdirectory(${EXTERNAL_DIR}/elzip)
 add_subdirectory(src)

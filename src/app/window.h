@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace SIGame
+namespace SIGame::App
 {
 /*
 * FIXME: For now, window class is fully static. It is supposed, that

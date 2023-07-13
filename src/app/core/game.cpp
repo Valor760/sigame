@@ -1,6 +1,6 @@
 #include "game.h"
 
-namespace SIGame::Core
+namespace SIGame::App::Core
 {
 
 } /* namespace SIGame::Core */

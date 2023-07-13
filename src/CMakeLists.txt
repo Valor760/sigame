@@ -17,13 +17,14 @@ add_library(imgui
 		${EXTERNAL_DIR}/imgui/backends/imgui_impl_opengl3.cpp
 		)
 
+set(COMMON_LIBS glfw3 imgui GLAD elzip)
 if(UNIX)
-	set(LIBS glfw3 imgui GLAD pthread GL dl)
+	set(OS_LIBS pthread GL dl)
 else()
-	set(LIBS glfw3 imgui GLAD opengl32)
+	set(OS_LIBS opengl32)
 endif()
 
-target_link_libraries(${EXEC} PUBLIC ${LIBS})
+target_link_libraries(${EXEC} PUBLIC ${OS_LIBS} ${COMMON_LIBS})
 
 # Copy assets to the binary directory
 # file(COPY ${ASSETS_PATH} DESTINATION ${BINARY_OUTPUT_DIR})

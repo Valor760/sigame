@@ -2,7 +2,7 @@
 
 int main()
 {
-	SIGame::App app{};
+	SIGame::App::MainApp app{};
 	if(app.Init())
 	{
 		app.Run();

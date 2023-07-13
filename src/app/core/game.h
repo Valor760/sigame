@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SIGame::Core
+namespace SIGame::App::Core
 {
 
 } /* namespace SIGame::Core */

@@ -9,7 +9,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-namespace SIGame
+namespace SIGame::App
 {
 BUTTON_CALLBACK_FUNC(SwitchLayout)
 {
@@ -28,7 +28,7 @@ BUTTON_CALLBACK_FUNC(SwitchLayout)
 }
 
 /* Init basic application settings */
-bool App::Init()
+bool MainApp::Init()
 {
 	/* Init OpenGL and ImGui stuff */
 	/* FIXME: Read window width and height from some settings file */
@@ -52,7 +52,7 @@ bool App::Init()
 	return true;
 }
 
-void App::Run()
+void MainApp::Run()
 {
 	while(!glfwWindowShouldClose(Window::GetWindow())) {
 		glfwPollEvents();

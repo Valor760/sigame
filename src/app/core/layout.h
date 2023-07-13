@@ -8,7 +8,7 @@
 #define ADD_BUTTON_CALLBACK(func) (void*)func, #func
 #define BUTTON_CALLBACK_FUNC(func) void func (const std::vector<std::string>& args)
 
-namespace SIGame::Core
+namespace SIGame::App::Core
 {
 using json = nlohmann::json;
 typedef void (*button_callback_t)(const std::vector<std::string>&);

@@ -8,7 +8,7 @@
 #define GET_JSON_CSTR(x) (GET_JSON_TYPE(x, std::string).c_str())
 #define GET_JSON_VEC2(x) (ImVec2(x[0], x[1]))
 
-namespace SIGame::Core
+namespace SIGame::App::Core
 {
 namespace JsonEntry
 {

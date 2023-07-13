@@ -2,7 +2,7 @@
 #include "log/log.h"
 #include "core/layout.h"
 
-namespace SIGame
+namespace SIGame::App
 {
 void GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height)
 {
