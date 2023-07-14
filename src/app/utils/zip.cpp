@@ -1,7 +1,6 @@
 #include "zip.h"
 
 #include <elzip/elzip.hpp>
-#include <elzip/unzipper.hpp>
 
 /* from elzip.cpp */
 namespace elz
@@ -12,21 +11,25 @@ extern void _extractFile(ziputils::unzipper& zipFile, const fs::path& filename, 
 
 namespace SIGame::App::Utils
 {
-void Zip::Extract(const fs::path& zip_path, const fs::path& extract_dir)
+Zip::Zip(const fs::path& zip_path)
 {
 	/* Code reference was taken from elz::extractZip. I just don't want to change external code for my purposes */
-	ziputils::unzipper zip_file;
-	if(!zip_file.open(zip_path.c_str()))
+	if(!m_ZipInstance.open(zip_path.c_str()))
 	{
 		LOG_ERROR("Can't open zip archive: %s", zip_path.c_str());
 		/* FIXME: How to handle exceptions, if I call this function in a thread? */
-		throw;
+		m_Success = false;
+		return;
 	}
 
-	auto files = zip_file.getFilenames();
-	m_NumFiles = files.size();
+	m_NumFiles = m_ZipInstance.getFilenames().size();
 
-	for(auto& filename : files)
+	m_Success = true;
+}
+
+void Zip::Extract(Zip& instance, const fs::path& extract_dir)
+{
+	for(auto& filename : instance.m_ZipInstance.getFilenames())
 	{
 		std::string real_path = elz::_resolvePath(filename);
 
@@ -38,7 +41,7 @@ void Zip::Extract(const fs::path& zip_path, const fs::path& extract_dir)
 		/* In our case we ignore files that can't be extracted for some reasons */
 		try
 		{
-			elz::_extractFile(zip_file, filename, currentFile.string(), "");
+			elz::_extractFile(instance.m_ZipInstance, filename, currentFile.string(), "");
 			LOG_DEBUG("Extracted file: %s", filename.c_str());
 		}
 		catch(...)
@@ -46,7 +49,7 @@ void Zip::Extract(const fs::path& zip_path, const fs::path& extract_dir)
 			LOG_ERROR("Can't extract file: %s", filename.c_str());
 		}
 
-		m_NumExtracted++;
+		instance.m_NumExtracted++;
 	}
 }
 

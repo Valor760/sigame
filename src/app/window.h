@@ -53,4 +53,4 @@ class Window
 		GLFWwindow* m_Window = nullptr;
 
 };
-} /* namespace SIGame */
+} /* namespace SIGame::App */

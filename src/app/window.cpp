@@ -65,7 +65,7 @@ bool Window::InitImpl(int width, int height)
 
 	glfwSetWindowSizeCallback(m_Window, GL_WindowSizeCallback);
 
-	Core::LayoutManager::AddButtonCallback(ADD_BUTTON_CALLBACK(SetWindowShouldClose));
+	Core::ADD_BUTTON_CALLBACK(SetWindowShouldClose);
 
 	return true;
 }

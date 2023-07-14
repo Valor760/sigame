@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#define ADD_BUTTON_CALLBACK(func) (void*)func, #func
+#define ADD_BUTTON_CALLBACK(func) LayoutManager::AddButtonCallback((void*)func, #func)
 #define BUTTON_CALLBACK_FUNC(func) void func (const std::vector<std::string>& args)
 
 namespace SIGame::App::Core

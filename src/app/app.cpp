@@ -44,7 +44,15 @@ bool MainApp::Init()
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 
-	Core::LayoutManager::AddButtonCallback(ADD_BUTTON_CALLBACK(SwitchLayout));
+	/* Create temporary directory */
+	if(fs::exists(TMP_DIR))
+	{
+		fs::remove_all(TMP_DIR);
+	}
+	/* This already creates tmp dir */
+	fs::create_directories(SIQ_EXTRACT_DIR);
+
+	Core::ADD_BUTTON_CALLBACK(SwitchLayout);
 
 	/* Do this AT THE END, so every component had time to add it's callbacks */
 	Core::LayoutManager::LoadLayout("Main Menu");
@@ -72,6 +80,13 @@ void MainApp::Run()
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(Window::GetWindow());
 	}
-	/* TODO: Should I do any cleanup here? */
+}
+
+MainApp::~MainApp()
+{
+	/* Remove tmp dir */
+	fs::remove_all(TMP_DIR);
+
+	Window::DeInit();
 }
 } /* namespace SIGame */
