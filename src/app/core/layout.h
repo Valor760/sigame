@@ -43,7 +43,19 @@ struct Item
 	/* Cleanup heap pointers */
 	~Item()
 	{
-		delete pItem;
+		switch(Type)
+		{
+			case ItemType::Button:
+			{
+				delete (Button*)pItem;
+				break;
+			}
+			default:
+			{
+				LOG_DEBUG("Unknown item type received: %d", Type);
+				break;
+			}
+		}
 		pItem = nullptr;
 	}
 };
