@@ -14,7 +14,7 @@ namespace SIGame::App::Utils
 Zip::Zip(const fs::path& zip_path)
 {
 	/* Code reference was taken from elz::extractZip. I just don't want to change external code for my purposes */
-	if(!m_ZipInstance.open(zip_path.c_str()))
+	if(!m_ZipInstance.open(zip_path.string().c_str()))
 	{
 		LOG_ERROR("Can't open zip archive: %s", zip_path.c_str());
 		/* FIXME: How to handle exceptions, if I call this function in a thread? */
