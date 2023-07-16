@@ -62,6 +62,8 @@ bool MainApp::Init()
 
 void MainApp::Run()
 {
+	glClearColor(0, 0, 0, 1.0);
+
 	while(!glfwWindowShouldClose(Window::GetWindow())) {
 		glfwPollEvents();
 
@@ -70,13 +72,14 @@ void MainApp::Run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
+
 		Core::LayoutManager::DrawLayout();
 
-		// Render end
+		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui::Render();
-		glViewport(0, 0, Window::GetWidth(), Window::GetHeight());
-		// glClearColor(0.5, 0.33, 0.7, 1.0);
-		// glClear(GL_COLOR_BUFFER_BIT);
+
+		// Render end
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(Window::GetWindow());
 	}

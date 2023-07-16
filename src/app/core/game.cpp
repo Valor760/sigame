@@ -15,7 +15,9 @@ Game::Game()
 BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
 {
 	/* TODO: Add selection dialog */
-	Game::SetPaketPath(ASSETS_DIR "/" TEST_PAKET);
+	const char* paket = ASSETS_DIR "/" TEST_PAKET;
+	Game::SetPaketPath(paket);
+	LOG_DEBUG("Selected paket: %s", paket);
 
 	/* TODO: Transfer variable with path name to the text callback */
 }

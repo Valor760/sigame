@@ -209,10 +209,7 @@ bool LayoutManager::applyLayout(const json& layout_data)
 	LOG_DEBUG("Applying layout \"%s\"", GET_JSON_CSTR(layout_data[JsonEntry::Name]));
 
 	/* Empty current layout stack */
-	if(m_CurrentLayoutStack.size())
-	{
-		m_CurrentLayoutStack.clear();
-	}
+	m_CurrentLayoutStack.clear();
 
 	for(auto& window : layout_data[JsonEntry::Windows])
 	{
@@ -319,6 +316,7 @@ bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 			LOG_ERROR("Failed to load JSON");
 			return false;
 		}
+		json_file.close();
 	}
 
 	if(!m_Json.contains(JsonEntry::Layout))
@@ -349,11 +347,11 @@ bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 }
 
 /* TODO: Move all 'draw' functions to separate file/renderer class */
-static void draw_button(Button* button)
+static bool draw_button(Button* button)
 {
 	if(!button)
 	{
-		return;
+		return false;
 	}
 
 	if(button->Size.x <= 0 || button->Size.y <= 0)
@@ -371,8 +369,11 @@ static void draw_button(Button* button)
 		if(button->pButtonPressedCallback)
 		{
 			button->pButtonPressedCallback(button->CallbackArgs);
+			return true;
 		}
 	}
+
+	return false;
 }
 
 bool LayoutManager::DrawLayoutImpl()
@@ -395,13 +396,19 @@ bool LayoutManager::DrawLayoutImpl()
 		ImGui::SetNextWindowSize(window->Size);
 		ImGui::Begin(window->Label.c_str(), nullptr, window->Flags);
 
-		for(auto item : window->Items)
+		for(auto& item : window->Items)
 		{
 			switch(item->Type)
 			{
 				case ItemType::Button:
 				{
-					draw_button((Button*)item->pItem);
+					/* FIXME: Need to think of a way, how to handle 'switch_layout', because right now */
+					/* this is a workaround. The problem is when we clear our windows vector - it crashes loop in this function */
+					if(draw_button((Button*)item->pItem))
+					{
+						ImGui::End();
+						goto Exit;
+					}
 					break;
 				}
 				default:
@@ -411,10 +418,10 @@ bool LayoutManager::DrawLayoutImpl()
 				}
 			}
 		}
-
 		ImGui::End();
 	}
 
+Exit:
 	return true;
 }
 

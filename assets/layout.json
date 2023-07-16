@@ -64,11 +64,11 @@
 			{
 				"Type" : "Button",
 				"Data" : {
-					"Label" : "Single Player",
+					"Label" : "Choose Paket",
 					"Size" : [400, 50],
 					"Position" : [600, 250],
-					"PressedCallbackName" : "SwitchLayout",
-					"Args" : ["Single Player"]
+					"PressedCallbackName" : "SelectSIQPaket",
+					"Args" : []
 				}
 			}]
 		}]

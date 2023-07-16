@@ -50,6 +50,11 @@ struct Item
 				delete (Button*)pItem;
 				break;
 			}
+			case ItemType::Text:
+			{
+				delete (Text*)pItem;
+				break;
+			}
 			default:
 			{
 				LOG_DEBUG("Unknown item type received: %d", Type);
