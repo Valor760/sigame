@@ -65,6 +65,7 @@ void MainApp::Run()
 	glClearColor(0, 0, 0, 1.0);
 
 	while(!glfwWindowShouldClose(Window::GetWindow())) {
+		glfwWaitEvents();
 		glfwPollEvents();
 
 		// Start Imgui frame
