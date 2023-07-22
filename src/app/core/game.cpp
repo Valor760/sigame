@@ -1,6 +1,8 @@
 #include "game.h"
 #include "app/utils/zip.h"
 
+#include "ImGuiFileDialog.h"
+
 namespace SIGame::App::Core
 {
 Game::Game()
@@ -17,7 +19,27 @@ BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
 	/* TODO: Add selection dialog */
 	const char* paket = ASSETS_DIR "/" TEST_PAKET;
 	Game::SetPaketPath(paket);
-	LOG_DEBUG("Selected paket: %s", paket);
+	const std::string dialog_name = "ChooseFileDlgKey";
+	ImGuiFileDialog fileDialog;
+	fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", nullptr, ".");
+
+	std::string filePathName = "";
+	std::string filePath = "";
+
+	ImVec2 maxSize = ImVec2((float)1600, (float)900);  // The full display area
+	ImVec2 minSize =  ImVec2((float)800, (float)450);  // Half the display area
+	if (fileDialog.Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
+	{
+		if (fileDialog.IsOk())
+		{
+			filePathName = fileDialog.GetFilePathName();
+			filePath = fileDialog.GetCurrentPath();
+		}
+		fileDialog.Close();
+	}
+
+	// LOG_DEBUG("Selected paket: %s", paket);
+	LOG_DEBUG("filePathName = %s | filePath = %s", filePathName.c_str(), filePath.c_str());
 
 	/* TODO: Transfer variable with path name to the text callback */
 }

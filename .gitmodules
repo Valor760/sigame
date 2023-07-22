@@ -7,3 +7,6 @@
 [submodule "elzip"]
 	path = external/elzip
 	url = https://github.com/Valor760/11Zip.git
+[submodule "external/imgui-dialog"]
+	path = external/imgui-dialog
+	url = https://github.com/aiekick/ImGuiFileDialog.git

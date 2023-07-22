@@ -1,6 +1,7 @@
 #include "app.h"
 #include "window.h"
 #include "core/layout.h"
+#include "core/game.h"
 
 #include <exception>
 #include <iostream>
@@ -30,6 +31,13 @@ BUTTON_CALLBACK_FUNC(SwitchLayout)
 /* Init basic application settings */
 bool MainApp::Init()
 {
+	/* FIXME: To use utf8 for imgui, need to have appropriate font */
+	/* see https://github.com/ocornut/imgui/issues/2233 */
+	if(std::setlocale(LC_ALL, ".UTF8"))
+	{
+		LOG_ERROR("Failed to set locale to UTF8");
+	}
+
 	/* Init OpenGL and ImGui stuff */
 	/* FIXME: Read window width and height from some settings file */
 	if(!Window::Init(1600, 900))
@@ -51,6 +59,9 @@ bool MainApp::Init()
 	}
 	/* This already creates tmp dir */
 	fs::create_directories(SIQ_EXTRACT_DIR);
+
+	/* Get instance to implicitly call contructor */
+	Core::Game::GetInstance();
 
 	Core::ADD_BUTTON_CALLBACK(SwitchLayout);
 

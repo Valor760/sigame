@@ -17,7 +17,7 @@ add_library(imgui
 		${EXTERNAL_DIR}/imgui/backends/imgui_impl_opengl3.cpp
 		)
 
-set(COMMON_LIBS glfw3 imgui GLAD elzip)
+set(COMMON_LIBS glfw3 imgui GLAD elzip ImGuiFileDialog)
 if(UNIX)
 	set(OS_LIBS pthread GL dl)
 else()
