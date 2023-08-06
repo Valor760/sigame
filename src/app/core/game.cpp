@@ -17,8 +17,8 @@ Game::Game()
 BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
 {
 	/* TODO: Add selection dialog */
-	const char* paket = ASSETS_DIR "/" TEST_PAKET;
-	Game::SetPaketPath(paket);
+	// const char* paket = ASSETS_DIR "/" TEST_PAKET;
+	// Game::SetPaketPath(paket);
 	const std::string dialog_name = "ChooseFileDlgKey";
 	ImGuiFileDialog fileDialog;
 	fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", nullptr, ".");

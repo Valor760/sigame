@@ -77,6 +77,16 @@ class LayoutManager
 			return Get().DrawLayoutImpl();
 		}
 
+		static inline void PushLayout(std::shared_ptr<LayoutWindow> layout)
+		{
+			Get().PushLayoutImpl(layout);
+		}
+
+		static inline void PopLayout(const std::string& layout_name)
+		{
+			Get().PopLayoutImpl(layout_name);
+		}
+
 		static void AddButtonCallback(void* func, std::string func_name);
 
 	private:
@@ -85,10 +95,16 @@ class LayoutManager
 
 		bool LoadLayoutImpl(const std::string& layout_name);
 		bool DrawLayoutImpl();
+		void PushLayoutImpl(std::shared_ptr<LayoutWindow> layout);
+		void PopLayoutImpl(const std::string& layout_name);
+
 		bool applyLayout(const json& layout_data);
 
 	private:
 		std::vector<std::shared_ptr<LayoutWindow>> m_CurrentLayoutStack = {};
+		/* FIXME: Probably can be a better way? */
+		std::vector<std::string> m_LayoutsToRemove = {};
+
 		json m_Json = json(nullptr);
 };
 } /* namespace SIGame::Core */

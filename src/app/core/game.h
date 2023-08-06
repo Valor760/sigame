@@ -14,10 +14,12 @@ class Game
 			static Game inst;
 			return inst;
 		}
+
 		static inline void SetPaketPath(const std::string& path)
 		{
 			GetInstance().SetPaketPathImpl(path);
 		}
+
 		static inline const std::string& GetPaketPath()
 		{
 			return GetInstance().GetPaketPathImpl();

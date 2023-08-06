@@ -208,7 +208,12 @@ bool LayoutManager::applyLayout(const json& layout_data)
 	LOG_DEBUG("Applying layout \"%s\"", GET_JSON_CSTR(layout_data[JsonEntry::Name]));
 
 	/* Empty current layout stack */
-	m_CurrentLayoutStack.clear();
+	// m_CurrentLayoutStack.clear();
+	/* TODO: Evaluate if this is correct */
+	for(auto window : m_CurrentLayoutStack)
+	{
+		m_LayoutsToRemove.push_back(window->Label);
+	}
 
 	for(auto& window : layout_data[JsonEntry::Windows])
 	{
@@ -378,10 +383,7 @@ bool LayoutManager::DrawLayoutImpl()
 		{
 			/* Remove window from render if window size is 0. */
 			LOG_DEBUG("Window \'%s\' has 0 size. Removing it from render stack!", window->Label);
-			m_CurrentLayoutStack.erase(
-				std::remove(m_CurrentLayoutStack.begin(), m_CurrentLayoutStack.end(), window),
-				m_CurrentLayoutStack.end()
-				);
+			m_LayoutsToRemove.push_back(window->Label);
 			continue;
 		}
 
@@ -395,13 +397,7 @@ bool LayoutManager::DrawLayoutImpl()
 			{
 				case ItemType::Button:
 				{
-					/* FIXME: Need to think of a way, how to handle 'switch_layout', because right now */
-					/* this is a workaround. The problem is when we clear our windows vector - it crashes loop in this function */
-					if(draw_button(std::get<Button>(item.objItem)))
-					{
-						ImGui::End();
-						goto Exit;
-					}
+					draw_button(std::get<Button>(item.objItem));
 					break;
 				}
 				default:
@@ -414,6 +410,19 @@ bool LayoutManager::DrawLayoutImpl()
 		ImGui::End();
 	}
 
+	/* Remove layouts if any */
+	while(m_LayoutsToRemove.size())
+	{
+		auto layout_name = m_LayoutsToRemove.back();
+		m_CurrentLayoutStack.erase(
+				std::remove_if(m_CurrentLayoutStack.begin(), m_CurrentLayoutStack.end(),
+				[layout_name](auto w){ return layout_name == w->Label; }),
+				m_CurrentLayoutStack.end()
+			);
+
+		m_LayoutsToRemove.pop_back();
+	}
+
 Exit:
 	return true;
 }
@@ -421,6 +430,16 @@ Exit:
 void LayoutManager::AddButtonCallback(void* func, std::string func_name)
 {
 	m_ButtonCallbackMap[func_name] = func;
+}
+
+void LayoutManager::PushLayoutImpl(std::shared_ptr<LayoutWindow> layout)
+{
+	m_CurrentLayoutStack.push_back(layout);
+}
+
+void LayoutManager::PopLayoutImpl(const std::string& layout_name)
+{
+	m_LayoutsToRemove.push_back(layout_name);
 }
 
 } /* namespace SIGame::Core */

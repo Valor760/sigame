@@ -2,11 +2,11 @@
 	"Layout": [{
 		"Name" : "Main Menu",
 		"Windows": [{
-			"Label" : "Window with Background",
+			"Label" : "MM: Window with Background",
 			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"]
 		},
 		{
-			"Label" : "Window with Buttons",
+			"Label" : "MM: Window with Buttons",
 			"Flags" : ["Flag_NoDecoration", "Flag_NoBackground"],
 			"Items" : [
 			{
