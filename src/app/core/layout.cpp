@@ -81,122 +81,121 @@ static std::string get_item_type(ItemType type_enum)
 	return "";
 }
 
-static Button* fill_button_item(const json& button)
+static Button fill_button_item(const json& button)
 {
-	Button* bt = new Button();
+	Button bt = Button();
 
 	if(button.contains(JsonEntry::Label))
 	{
-		bt->Label = button[JsonEntry::Label];
+		bt.Label = button[JsonEntry::Label];
 	}
 	else
 	{
 		LOG_ERROR("Button doesn't have \"%s\" field!", JsonEntry::Label);
-		return nullptr;
+		return Button();
 	}
 
 	if(button.contains(JsonEntry::Size))
 	{
-		bt->Size = GET_JSON_VEC2(button[JsonEntry::Size]);
+		bt.Size = GET_JSON_VEC2(button[JsonEntry::Size]);
 	}
 	else
 	{
-		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Don't know what size to choose.", bt->Label.c_str(), JsonEntry::Size);
-		return nullptr;
+		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Don't know what size to choose.", bt.Label.c_str(), JsonEntry::Size);
+		return Button();
 	}
 
 	if(button.contains(JsonEntry::Position))
 	{
-		bt->Position = GET_JSON_VEC2(button[JsonEntry::Position]);
+		bt.Position = GET_JSON_VEC2(button[JsonEntry::Position]);
 	}
 	else
 	{
-		bt->Position = ImVec2(0, 0);
+		bt.Position = ImVec2(0, 0);
 		LOG_INFO("Button \"%s\" doesn't have \"%s\" field. Defaulting to (%d, %d)",
-			bt->Label.c_str(), JsonEntry::Position, (int)bt->Position.x, (int)bt->Position.y);
+			bt.Label.c_str(), JsonEntry::Position, (int)bt.Position.x, (int)bt.Position.y);
 	}
 
 	if(button.contains(JsonEntry::PressedCallback))
 	{
 		try
 		{
-			bt->pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[button[JsonEntry::PressedCallback]];
+			bt.pButtonPressedCallback = (button_callback_t) m_ButtonCallbackMap[button[JsonEntry::PressedCallback]];
 		}
 		catch(...)
 		{
-			bt->pButtonPressedCallback = nullptr;
+			bt.pButtonPressedCallback = nullptr;
 			LOG_ERROR("Button \"%s\": Can't find \"%s\" callback function.");
 		}
 
 		if(button.contains(JsonEntry::CallbackArgs))
 		{
-			bt->CallbackArgs = button[JsonEntry::CallbackArgs];
+			bt.CallbackArgs = button[JsonEntry::CallbackArgs];
 		}
 		else
 		{
-			bt->CallbackArgs = {};
+			bt.CallbackArgs = {};
 		}
 	}
 	else
 	{
 		LOG_ERROR("Button \"%s\" doesn't have \"%s\" field. Why such useless button exists?",
-			bt->Label.c_str(), JsonEntry::PressedCallback);
+			bt.Label.c_str(), JsonEntry::PressedCallback);
 	}
 
 	return bt;
 }
 
-static Text* fill_text_item(const json& text)
+static Text fill_text_item(const json& text)
 {
-	Text* txt = new Text();
+	Text txt = Text();
 
 	if(text.contains(JsonEntry::Label))
 	{
-		txt->Label = text[JsonEntry::Label];
+		txt.Label = text[JsonEntry::Label];
 	}
 	else
 	{
 		LOG_ERROR("Cannot find text(Label) for text field");
-		return nullptr;
+		return Text();
 	}
 
 	if(text.contains(JsonEntry::Position))
 	{
-		txt->Position = GET_JSON_VEC2(text[JsonEntry::Position]);
+		txt.Position = GET_JSON_VEC2(text[JsonEntry::Position]);
 	}
 	else
 	{
-		txt->Position = ImVec2(0, 0);
+		txt.Position = ImVec2(0, 0);
 		LOG_DEBUG("Some text[\"%s...\"] doesn't have position. Defaulting to (%d, %d)",
-			txt->Label.substr(0, 20).c_str(),
-			(int)txt->Position.x,
-			(int)txt->Position.y);
+			txt.Label.substr(0, 20).c_str(),
+			(int)txt.Position.x,
+			(int)txt.Position.y);
 	}
 
 	return txt;
 }
 
-static std::shared_ptr<Item> fill_item(const json& item)
+static Item fill_item(const json& item)
 {
-	std::shared_ptr<Item> it = std::make_shared<Item>();
-	it->Type = get_item_type(std::string(item[JsonEntry::ItemType]));
+	Item it = Item();
+	it.Type = get_item_type(std::string(item[JsonEntry::ItemType]));
 
-	switch(it->Type)
+	switch(it.Type)
 	{
 		case ItemType::Button:
 		{
-			it->pItem = fill_button_item(item[JsonEntry::Data]);
+			it.objItem = fill_button_item(item[JsonEntry::Data]);
 			break;
 		}
 		case ItemType::Text:
 		{
-			it->pItem = fill_text_item(item[JsonEntry::Data]);
+			it.objItem = fill_text_item(item[JsonEntry::Data]);
 			break;
 		}
 		default:
 		{
-			LOG_ERROR("Unknown item type received: %d", it->Type);
-			it->pItem = nullptr;
+			LOG_ERROR("Unknown item type received: %d", it.Type);
 			break;
 		}
 	}
@@ -347,28 +346,22 @@ bool LayoutManager::LoadLayoutImpl(const std::string& layout_name)
 }
 
 /* TODO: Move all 'draw' functions to separate file/renderer class */
-static bool draw_button(Button* button)
+static bool draw_button(const Button& button)
 {
-	if(!button)
+	if(button.Size.x <= 0 || button.Size.y <= 0)
 	{
+		/* Remove button from rendering */
+		//LOG_DEBUG("Button \'%s\' has 0 size. Removing it from rendering!", button.Label);
 		return false;
 	}
 
-	if(button->Size.x <= 0 || button->Size.y <= 0)
-	{
-		/* Remove button from rendering */
-		LOG_DEBUG("Button \'%s\' has 0 size. Removing it from rendering!", button->Label);
-		delete button;
-		button = nullptr;
-	}
-
 	/* TODO: Add ImGui::PushStyleColor */
-	ImGui::SetCursorPos(button->Position);
-	if(ImGui::Button(button->Label.c_str(), button->Size))
+	ImGui::SetCursorPos(button.Position);
+	if(ImGui::Button(button.Label.c_str(), button.Size))
 	{
-		if(button->pButtonPressedCallback)
+		if(button.pButtonPressedCallback)
 		{
-			button->pButtonPressedCallback(button->CallbackArgs);
+			button.pButtonPressedCallback(button.CallbackArgs);
 			return true;
 		}
 	}
@@ -398,13 +391,13 @@ bool LayoutManager::DrawLayoutImpl()
 
 		for(auto& item : window->Items)
 		{
-			switch(item->Type)
+			switch(item.Type)
 			{
 				case ItemType::Button:
 				{
 					/* FIXME: Need to think of a way, how to handle 'switch_layout', because right now */
 					/* this is a workaround. The problem is when we clear our windows vector - it crashes loop in this function */
-					if(draw_button((Button*)item->pItem))
+					if(draw_button(std::get<Button>(item.objItem)))
 					{
 						ImGui::End();
 						goto Exit;
@@ -413,7 +406,7 @@ bool LayoutManager::DrawLayoutImpl()
 				}
 				default:
 				{
-					LOG_DEBUG("Unknown item type received for rendering [%d]", item->Type);
+					LOG_DEBUG("Unknown item type received for rendering [%d]", item.Type);
 					break;
 				}
 			}

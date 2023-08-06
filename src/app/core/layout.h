@@ -4,6 +4,7 @@
 #include "json.hpp"
 
 #include <vector>
+#include <variant>
 
 #define ADD_BUTTON_CALLBACK(func) LayoutManager::AddButtonCallback((void*)func, #func)
 #define BUTTON_CALLBACK_FUNC(func) void func (const std::vector<std::string>& args)
@@ -15,11 +16,13 @@ typedef void (*button_callback_t)(const std::vector<std::string>&);
 
 enum class ItemType
 {
-	Button, Text
+	None, Button, Text
 };
 
 struct Button
 {
+	Button() : Label(""), Size(0, 0), Position(0, 0), pButtonPressedCallback(nullptr), CallbackArgs() {}
+
 	std::string Label;
 	ImVec2 Size;
 	ImVec2 Position; /* Upper left corner position */
@@ -29,6 +32,8 @@ struct Button
 
 struct Text
 {
+	Text() : Label(""), Position(0, 0) {}
+
 	std::string Label;
 	ImVec2 Position; /* Upper left corner position */
 	// float FontSize;
@@ -37,32 +42,12 @@ struct Text
 
 struct Item
 {
-	ItemType Type;
-	void* pItem;
+	Item() : Type(ItemType::None) {}
 
-	/* Cleanup heap pointers */
-	~Item()
-	{
-		switch(Type)
-		{
-			case ItemType::Button:
-			{
-				delete (Button*)pItem;
-				break;
-			}
-			case ItemType::Text:
-			{
-				delete (Text*)pItem;
-				break;
-			}
-			default:
-			{
-				LOG_DEBUG("Unknown item type received: %d", Type);
-				break;
-			}
-		}
-		pItem = nullptr;
-	}
+	ItemType Type;
+	std::variant<
+		Button, Text
+	> objItem;
 };
 
 struct LayoutWindow
@@ -71,7 +56,7 @@ struct LayoutWindow
 	ImVec2 Size;
 	ImVec2 Position; /* Upper left corner position */
 	ImGuiWindowFlags Flags;
-	std::vector<std::shared_ptr<Item>> Items;
+	std::vector<Item> Items;
 };
 
 class LayoutManager
