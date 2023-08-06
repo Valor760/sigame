@@ -18,7 +18,7 @@
 /* COMMON DEFINES */
 /* FIXME: What about moving defines to some 'constants' file? */
 #define TMP_DIR			".tmp"
-#define SIQ_EXTRACT_DIR TMP_DIR "/siq"
+#define SIQ_EXTRACT_DIR TMP_DIR"/siq"
 #define ASSETS_DIR		"assets"
 
 /* OTHER STUFF */

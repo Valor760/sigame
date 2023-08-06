@@ -27,21 +27,21 @@ Zip::Zip(const fs::path& zip_path)
 	m_Success = true;
 }
 
-void Zip::Extract(Zip& instance, const fs::path& extract_dir)
+void Zip::Extract(const fs::path& extract_dir)
 {
-	for(auto& filename : instance.m_ZipInstance.getFilenames())
+	for(auto& filename : m_ZipInstance.getFilenames())
 	{
-		std::string real_path = elz::_resolvePath(filename);
-
-		fs::path currentDir = extract_dir / std::filesystem::path(real_path).parent_path();
-		fs::create_directories(currentDir);
-
-		fs::path currentFile = extract_dir / real_path;
-
 		/* In our case we ignore files that can't be extracted for some reasons */
 		try
 		{
-			elz::_extractFile(instance.m_ZipInstance, filename, currentFile.string(), "");
+			std::string real_path = elz::_resolvePath(filename);
+
+			fs::path currentDir = extract_dir / std::filesystem::path(real_path).parent_path();
+			fs::create_directories(currentDir);
+
+			fs::path currentFile = extract_dir / real_path;
+
+			elz::_extractFile(m_ZipInstance, filename, currentFile.string(), "");
 			LOG_DEBUG("Extracted file: %s", filename.c_str());
 		}
 		catch(...)
@@ -49,7 +49,7 @@ void Zip::Extract(Zip& instance, const fs::path& extract_dir)
 			LOG_ERROR("Can't extract file: %s", filename.c_str());
 		}
 
-		instance.m_NumExtracted++;
+		m_NumExtracted++;
 	}
 }
 

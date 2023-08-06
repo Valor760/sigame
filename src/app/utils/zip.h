@@ -10,7 +10,7 @@ class Zip
 	public:
 		Zip(const fs::path& zip_path);
 
-		static void Extract(Zip& instance, const fs::path& extract_dir);
+		void Extract(const fs::path& extract_dir);
 
 		size_t GetTotalFilesNum() const;
 		size_t GetExtractedFilesNum() const;

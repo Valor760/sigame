@@ -56,12 +56,12 @@ BUTTON_CALLBACK_FUNC(Game::DoStuff)
 	Utils::Zip zip(paket_path);
 	
 	size_t total_files = zip.GetTotalFilesNum();
-	std::thread extract_thread(Utils::Zip::Extract, std::ref(zip), SIQ_EXTRACT_DIR);
+	std::thread extract_thread(&Utils::Zip::Extract, std::ref(zip), SIQ_EXTRACT_DIR);
 
 	size_t files_extracted = 0;
 	while((files_extracted = zip.GetExtractedFilesNum()) < total_files)
 	{
-		LOG_DEBUG("Extracted: %llu/%llu (%d%)", files_extracted, total_files, (files_extracted * 100) / total_files );
+		LOG_DEBUG("Extracted: %llu/%llu (%d%)", files_extracted, total_files, (files_extracted * 100) / total_files);
 	}
 
 	extract_thread.join();
