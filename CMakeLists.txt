@@ -9,18 +9,22 @@ set(EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(ASSETS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 set(LIB_GLAD_PATH ${EXTERNAL_DIR}/glad/gl.c)
 
+# Defines
+set(WINDOWS_DEFINES "SI_PLATFORM_WINDOWS")
+set(LINUX_DEFINES   "SI_PLATFORM_LINUX")
+set(COMMON_DEFINES  "")
 
 # Set flags according to the OS
 # TODO: Add optimization flags to release build
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /Zc:preprocessor")
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 	endif()
 elseif(UNIX AND NOT APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++2a")
-	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 
+	if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 	endif()
 else()
 	message(FATAL_ERROR "Current OS is not supported!")

@@ -7,6 +7,12 @@ file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 add_executable(${EXEC} ${SRC} ${HEADERS})
 
+if(MSVC)
+	target_compile_definitions(${TARGET} PUBLIC ${WINDOWS_DEFINES} ${COMMON_DEFINES})
+elseif(UNIX AND NOT APPLE)
+	target_compile_definitions(${TARGET} PUBLIC ${LINUX_DEFINES} ${COMMON_DEFINES})
+endif()
+
 add_library(GLAD ${LIB_GLAD_PATH})
 add_library(imgui
 		${EXTERNAL_DIR}/imgui/imgui.cpp
@@ -15,7 +21,7 @@ add_library(imgui
 		${EXTERNAL_DIR}/imgui/imgui_draw.cpp
 		${EXTERNAL_DIR}/imgui/backends/imgui_impl_glfw.cpp
 		${EXTERNAL_DIR}/imgui/backends/imgui_impl_opengl3.cpp
-		)
+	)
 
 set(COMMON_LIBS glfw3 imgui GLAD elzip ImGuiFileDialog)
 if(UNIX)
