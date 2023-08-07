@@ -1,7 +1,10 @@
 #include "game.h"
 #include "app/utils/zip.h"
 
-#include "ImGuiFileDialog.h"
+#ifdef SI_PLATFORM_WINDOWS
+#include <windows.h>
+#include <shobjidl.h>
+#endif
 
 namespace SIGame::App::Core
 {
@@ -14,33 +17,56 @@ Game::Game()
 /* TODO: Remove */
 #define TEST_PAKET "test_bad.siq"
 
+static std::string select_file_dialog()
+{
+	char selected_file[512];
+	memset(selected_file, 0, sizeof(selected_file));
+
+#if defined(SI_PLATFORM_WINDOWS)
+	IFileOpenDialog *pFileOpen;
+
+	// Create the FileOpenDialog object.
+	HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
+			IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+
+	if (SUCCEEDED(hr))
+	{
+		// Show the Open dialog box.
+		hr = pFileOpen->Show(NULL);
+
+		// Get the file name from the dialog box.
+		if (SUCCEEDED(hr))
+		{
+			IShellItem *pItem;
+			hr = pFileOpen->GetResult(&pItem);
+			if (SUCCEEDED(hr))
+			{
+				PWSTR pszFilePath;
+				hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+				// Display the file name to the user.
+				if (SUCCEEDED(hr))
+				{
+					wcstombs(selected_file, pszFilePath, sizeof(selected_file));
+					CoTaskMemFree(pszFilePath);
+				}
+				pItem->Release();
+			}
+		}
+		pFileOpen->Release();
+	}
+	CoUninitialize();
+#elif defined(SI_PLATFORM_LINUX)
+/* TODO: Use execve or std::system and call zenity --file-selection */
+/* Save result to the file and read from it (or read directly from output, but it will be more tricky) */
+#endif
+	return std::string(selected_file);
+}
+
 BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
 {
-	/* TODO: Add selection dialog */
-	// const char* paket = ASSETS_DIR "/" TEST_PAKET;
-	// Game::SetPaketPath(paket);
-	const std::string dialog_name = "ChooseFileDlgKey";
-	ImGuiFileDialog fileDialog;
-	fileDialog.OpenDialog("ChooseFileDlgKey", "Choose File", nullptr, ".");
-
-	std::string filePathName = "";
-	std::string filePath = "";
-
-	ImVec2 maxSize = ImVec2((float)1600, (float)900);  // The full display area
-	ImVec2 minSize =  ImVec2((float)800, (float)450);  // Half the display area
-	if (fileDialog.Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
-	{
-		if (fileDialog.IsOk())
-		{
-			filePathName = fileDialog.GetFilePathName();
-			filePath = fileDialog.GetCurrentPath();
-		}
-		fileDialog.Close();
-	}
-
-	// LOG_DEBUG("Selected paket: %s", paket);
-	LOG_DEBUG("filePathName = %s | filePath = %s", filePathName.c_str(), filePath.c_str());
-
+	std::string selected_paket = select_file_dialog();
+	Game::SetPaketPath(selected_paket);
 	/* TODO: Transfer variable with path name to the text callback */
 }
 
@@ -69,6 +95,7 @@ BUTTON_CALLBACK_FUNC(Game::DoStuff)
 
 void Game::SetPaketPathImpl(const std::string& path)
 {
+	LOG_DEBUG("Selected paket path = %s", path.c_str());
 	m_SelectedPaketPath = path;
 }
 
