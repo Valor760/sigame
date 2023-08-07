@@ -73,5 +73,4 @@ link_directories(${OUTPUT_LIB_DIR})
 # CMake modules
 add_subdirectory(${EXTERNAL_DIR}/glfw)
 add_subdirectory(${EXTERNAL_DIR}/elzip)
-add_subdirectory(${EXTERNAL_DIR}/imgui-dialog)
 add_subdirectory(src)
