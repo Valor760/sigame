@@ -11,11 +11,8 @@ namespace SIGame::App::Core
 Game::Game()
 {
 	ADD_BUTTON_CALLBACK(SelectSIQPaket);
-	ADD_BUTTON_CALLBACK(DoStuff);
+	ADD_BUTTON_CALLBACK(ExtractSIQPaket);
 }
-
-/* TODO: Remove */
-#define TEST_PAKET "test_bad.siq"
 
 static std::string select_file_dialog()
 {
@@ -70,7 +67,7 @@ BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
 	/* TODO: Transfer variable with path name to the text callback */
 }
 
-BUTTON_CALLBACK_FUNC(Game::DoStuff)
+BUTTON_CALLBACK_FUNC(Game::ExtractSIQPaket)
 {
 	const std::string& paket_path = Game::GetPaketPath();
 	if(paket_path.empty())

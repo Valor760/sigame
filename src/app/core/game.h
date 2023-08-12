@@ -7,7 +7,7 @@ class Game
 {
 	public:
 		static BUTTON_CALLBACK_FUNC(SelectSIQPaket);
-		static BUTTON_CALLBACK_FUNC(DoStuff);
+		static BUTTON_CALLBACK_FUNC(ExtractSIQPaket);
 
 		static Game& GetInstance()
 		{
