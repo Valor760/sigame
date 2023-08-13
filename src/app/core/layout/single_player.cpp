@@ -16,7 +16,7 @@ BUTTON_CALLBACK_FUNC(ChoosePaketCallback)
 	/* Then change the button */
 	/* FIXME: THink how to change the button. I can't change it directly in the structure as it is static */
 	/* I guess the easiest way is to change everything to raw/smart pointers? */
-	std::get<Button>(Layout_SinglePlayer.LayoutWindowStack[1].Items[0].objItem).Label = "QWEQWEQWEQW";
+	// std::get<Button*>(Layout_SinglePlayer.LayoutWindowStack[1].Items[0].objItem).Label = "QWEQWEQWEQW";
 }
 
 Button SP_ChoosePaket_Button = {
@@ -33,7 +33,7 @@ LayoutWindow SP_Buttons_Window = {
 	.Position  = POSITION_DEFAULT,
 	.Flags     = WINDOW_BACKGROUND_FLAGS,
 	.Items     = {
-		{ ItemType::Button, SP_ChoosePaket_Button },
+		{ ItemType::Button, &SP_ChoosePaket_Button },
 	},
 };
 
@@ -48,7 +48,7 @@ LayoutWindow SP_Background_Window = {
 Layout Layout_SinglePlayer = {
 	.LayoutName = "Single Player",
 	.LayoutWindowStack = {
-		SP_Background_Window, SP_Buttons_Window
+		&SP_Background_Window, &SP_Buttons_Window
 	},
 };
 

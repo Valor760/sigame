@@ -40,23 +40,23 @@ struct Item
 {
 	ItemType Type = ItemType::None;
 	std::variant<
-		Button, Text
+		Button*, Text*
 	> objItem;
 };
 
 struct LayoutWindow
 {
-	std::string Label         = "";
-	ImVec2 Size               = {0, 0};
-	ImVec2 Position           = {0, 0}; /* Upper left corner position */
-	ImGuiWindowFlags Flags    = 0;
+	std::string Label          = "";
+	ImVec2 Size                = {0, 0};
+	ImVec2 Position            = {0, 0}; /* Upper left corner position */
+	ImGuiWindowFlags Flags     = 0;
 	std::vector<Item> Items   = {};
 };
 
 struct Layout
 {
-	std::string LayoutName;
-	std::vector<LayoutWindow> LayoutWindowStack;
+	std::string LayoutName                       = "";
+	std::vector<LayoutWindow*> LayoutWindowStack = {};
 };
 
 class LayoutManager
@@ -86,7 +86,7 @@ class LayoutManager
 		BUTTON_CALLBACK_FUNC(SwitchLayoutImpl);
 
 	private:
-		Layout m_CurrentLayout = {};
+		Layout* m_CurrentLayout = {};
 		bool m_NeedSwitchLayout = false;
 };
 } /* namespace SIGame::Core */

@@ -6,20 +6,20 @@ namespace SIGame::App::Core
 
 extern Layout Layout_MainMenu;
 extern Layout Layout_SinglePlayer;
-static std::vector<Layout> g_Layouts = {};
+static std::vector<Layout*> g_Layouts = {};
 
 /* Call add all layouts to global array in constructor */
 LayoutManager::LayoutManager()
 {
 	g_Layouts = {
-		Layout_MainMenu, Layout_SinglePlayer
+		&Layout_MainMenu, &Layout_SinglePlayer
 	};
 }
 
 /* TODO: Move all 'draw' functions to separate file/renderer class */
-static bool draw_button(const Button& button)
+static bool draw_button(const Button* button)
 {
-	if(button.Size.x <= 0 || button.Size.y <= 0)
+	if(button->Size.x <= 0 || button->Size.y <= 0)
 	{
 		/* Remove button from rendering */
 		//LOG_DEBUG("Button \'%s\' has 0 size. Removing it from rendering!", button.Label);
@@ -27,12 +27,12 @@ static bool draw_button(const Button& button)
 	}
 
 	/* TODO: Add ImGui::PushStyleColor */
-	ImGui::SetCursorPos(button.Position);
-	if(ImGui::Button(button.Label.c_str(), button.Size))
+	ImGui::SetCursorPos(button->Position);
+	if(ImGui::Button(button->Label.c_str(), button->Size))
 	{
-		if(button.pButtonPressedCallback)
+		if(button->pButtonPressedCallback)
 		{
-			button.pButtonPressedCallback(button.CallbackArgs);
+			button->pButtonPressedCallback(button->CallbackArgs);
 			return true;
 		}
 	}
@@ -42,7 +42,7 @@ static bool draw_button(const Button& button)
 
 bool LayoutManager::DrawLayoutImpl()
 {
-	for(auto& window : m_CurrentLayout.LayoutWindowStack)
+	for(auto* window : m_CurrentLayout->LayoutWindowStack)
 	{
 		/* Setup and draw window */
 		/* If {0, 0} then fullscreen? */
@@ -52,17 +52,17 @@ bool LayoutManager::DrawLayoutImpl()
 		// 	continue;
 		// }
 
-		ImGui::SetNextWindowPos(window.Position);
-		ImGui::SetNextWindowSize(window.Size);
-		ImGui::Begin(window.Label.c_str(), nullptr, window.Flags);
+		ImGui::SetNextWindowPos(window->Position);
+		ImGui::SetNextWindowSize(window->Size);
+		ImGui::Begin(window->Label.c_str(), nullptr, window->Flags);
 
-		for(auto& item : window.Items)
+		for(auto& item : window->Items)
 		{
 			switch(item.Type)
 			{
 				case ItemType::Button:
 				{
-					draw_button(std::get<Button>(item.objItem));
+					draw_button(std::get<Button*>(item.objItem));
 					/* FIXME: How else I can track, that we need to switch layout and avoid various errors? */
 					if(m_NeedSwitchLayout)
 					{
@@ -96,9 +96,9 @@ BUTTON_CALLBACK_FUNC(LayoutManager::SwitchLayoutImpl)
 
 	const std::string search_name = args[0];
 	bool found_layout = false;
-	for(auto layout : g_Layouts)
+	for(auto* layout : g_Layouts)
 	{
-		if(layout.LayoutName == search_name)
+		if(layout->LayoutName == search_name)
 		{
 			found_layout = true;
 			m_CurrentLayout = layout;
