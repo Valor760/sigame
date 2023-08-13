@@ -10,8 +10,7 @@ namespace SIGame::App::Core
 {
 Game::Game()
 {
-	ADD_BUTTON_CALLBACK(SelectSIQPaket);
-	ADD_BUTTON_CALLBACK(ExtractSIQPaket);
+
 }
 
 static std::string select_file_dialog()
@@ -60,19 +59,19 @@ static std::string select_file_dialog()
 	return std::string(selected_file);
 }
 
-BUTTON_CALLBACK_FUNC(Game::SelectSIQPaket)
+void Game::SelectSIQPaket()
 {
 	std::string selected_paket = select_file_dialog();
 	Game::SetPaketPath(selected_paket);
 	/* TODO: Transfer variable with path name to the text callback */
 }
 
-BUTTON_CALLBACK_FUNC(Game::ExtractSIQPaket)
+bool Game::ExtractSIQPaket()
 {
 	const std::string& paket_path = Game::GetPaketPath();
 	if(paket_path.empty())
 	{
-		return;
+		return false;
 	}
 
 	/* Extract our paket */
@@ -81,6 +80,7 @@ BUTTON_CALLBACK_FUNC(Game::ExtractSIQPaket)
 	size_t total_files = zip.GetTotalFilesNum();
 	std::thread extract_thread(&Utils::Zip::Extract, std::ref(zip), SIQ_EXTRACT_DIR);
 
+	/* This loop should always end, otherwise something bad happenned */
 	size_t files_extracted = 0;
 	while((files_extracted = zip.GetExtractedFilesNum()) < total_files)
 	{
@@ -88,6 +88,7 @@ BUTTON_CALLBACK_FUNC(Game::ExtractSIQPaket)
 	}
 
 	extract_thread.join();
+	return true;
 }
 
 void Game::SetPaketPathImpl(const std::string& path)

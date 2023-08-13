@@ -1,13 +1,13 @@
 #pragma once
-#include "layout.h"
+#include "layout/layout.h"
 
 namespace SIGame::App::Core
 {
 class Game
 {
 	public:
-		static BUTTON_CALLBACK_FUNC(SelectSIQPaket);
-		static BUTTON_CALLBACK_FUNC(ExtractSIQPaket);
+		static void SelectSIQPaket();
+		static bool ExtractSIQPaket();
 
 		static Game& GetInstance()
 		{
@@ -24,7 +24,7 @@ class Game
 		{
 			return GetInstance().GetPaketPathImpl();
 		}
-	
+
 	private:
 		Game();
 
@@ -32,7 +32,6 @@ class Game
 		const std::string& GetPaketPathImpl();
 
 		bool extractSIQPaket();
-		
 
 	private:
 		std::string m_SelectedPaketPath = "";

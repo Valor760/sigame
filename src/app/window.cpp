@@ -1,6 +1,5 @@
 #include "window.h"
 #include "log/log.h"
-#include "core/layout.h"
 
 namespace SIGame::App
 {
@@ -10,11 +9,6 @@ void GL_WindowSizeCallback(GLFWwindow* window, int new_width, int new_height)
 	LOG_DEBUG("Window size changed: [prev %dx%d] [new %dx%d]", (int)prev_size.x, (int)prev_size.y, new_width, new_height);
 
 	Window::SetSize(ImVec2(new_width, new_height));
-}
-
-BUTTON_CALLBACK_FUNC(SetWindowShouldClose)
-{
-	glfwSetWindowShouldClose(Window::GetWindow(), GLFW_TRUE);
 }
 
 bool Window::InitImpl(int width, int height)
@@ -64,8 +58,6 @@ bool Window::InitImpl(int width, int height)
 	glfwSwapInterval(1); // Enable VSYNC
 
 	glfwSetWindowSizeCallback(m_Window, GL_WindowSizeCallback);
-
-	Core::ADD_BUTTON_CALLBACK(SetWindowShouldClose);
 
 	return true;
 }
