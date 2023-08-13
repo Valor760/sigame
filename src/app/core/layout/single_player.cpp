@@ -16,7 +16,7 @@ BUTTON_CALLBACK_FUNC(ChoosePaketCallback)
 	// std::get<Button*>(Layout_SinglePlayer.LayoutWindowStack[1].Items[0].objItem).Label = "QWEQWEQWEQW";
 }
 
-Button SP_ChoosePaket_Button = {
+static Button SP_ChoosePaket_Button = {
 	.Label = "Choose Paket",
 	.Size  = {400, 50},
 	.Position = {600, 250},
@@ -24,7 +24,7 @@ Button SP_ChoosePaket_Button = {
 	.CallbackArgs = {},
 };
 
-LayoutWindow SP_Buttons_Window = {
+static LayoutWindow SP_Buttons_Window = {
 	.Label     = "Buttons",
 	.Size      = WINDOW_SIZE_FULLSCREEN,
 	.Position  = POSITION_DEFAULT,
@@ -34,7 +34,7 @@ LayoutWindow SP_Buttons_Window = {
 	},
 };
 
-LayoutWindow SP_Background_Window = {
+static LayoutWindow SP_Background_Window = {
 	.Label     = "Background",
 	.Size      = WINDOW_SIZE_FULLSCREEN,
 	.Position  = POSITION_DEFAULT,

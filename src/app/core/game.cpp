@@ -85,6 +85,7 @@ bool Game::ExtractSIQPaket()
 	while((files_extracted = zip.GetExtractedFilesNum()) < total_files)
 	{
 		LOG_DEBUG("Extracted: %llu/%llu (%d%)", files_extracted, total_files, (files_extracted * 100) / total_files);
+		/* TODO: Add small sleep */
 	}
 
 	extract_thread.join();
