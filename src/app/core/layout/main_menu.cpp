@@ -5,7 +5,6 @@
 namespace SIGame::App::Core
 {
 
-extern Layout Layout_MainMenu;
 static BUTTON_CALLBACK_FUNC(SetWindowShouldClose)
 {
 	glfwSetWindowShouldClose(Window::GetWindow(), GLFW_TRUE);

@@ -5,7 +5,6 @@
 
 namespace SIGame::App::Core
 {
-extern Layout Layout_SinglePlayer;
 BUTTON_CALLBACK_FUNC(ChoosePaketCallback)
 {
 	SIQ_UNUSED(args);
@@ -14,8 +13,6 @@ BUTTON_CALLBACK_FUNC(ChoosePaketCallback)
 	Game::SelectSIQPaket();
 
 	/* Then change the button */
-	/* FIXME: THink how to change the button. I can't change it directly in the structure as it is static */
-	/* I guess the easiest way is to change everything to raw/smart pointers? */
 	// std::get<Button*>(Layout_SinglePlayer.LayoutWindowStack[1].Items[0].objItem).Label = "QWEQWEQWEQW";
 }
 
