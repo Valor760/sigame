@@ -16,13 +16,11 @@ LayoutManager::LayoutManager()
 	};
 }
 
-/* TODO: Move all 'draw' functions to separate file/renderer class */
+/* TODO: Should all 'draw' functions be moved to separate file/renderer class or stay here? */
 static bool draw_button(const Button* button)
 {
 	if(button->Size.x <= 0 || button->Size.y <= 0)
 	{
-		/* Remove button from rendering */
-		//LOG_DEBUG("Button \'%s\' has 0 size. Removing it from rendering!", button.Label);
 		return false;
 	}
 
