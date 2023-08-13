@@ -65,8 +65,8 @@ static LayoutWindow MM_Background_Window = {
 };
 
 Layout Layout_MainMenu = {
-	.LayoutName = "Main Menu",
-	.LayoutWindowStack = {
+	.Name = "Main Menu",
+	.WindowStack = {
 		&MM_Background_Window, &MM_Buttons_Window
 	},
 };

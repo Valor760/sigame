@@ -46,8 +46,8 @@ LayoutWindow SP_Background_Window = {
 };
 
 Layout Layout_SinglePlayer = {
-	.LayoutName = "Single Player",
-	.LayoutWindowStack = {
+	.Name = "Single Player",
+	.WindowStack = {
 		&SP_Background_Window, &SP_Buttons_Window
 	},
 };

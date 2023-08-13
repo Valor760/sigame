@@ -42,15 +42,14 @@ static bool draw_button(const Button* button)
 
 bool LayoutManager::DrawLayoutImpl()
 {
-	for(auto* window : m_CurrentLayout->LayoutWindowStack)
+	for(auto* window : m_CurrentLayout->WindowStack)
 	{
 		/* Setup and draw window */
-		/* If {0, 0} then fullscreen? */
-		// if(window.Size.x <= 0 || window.Size.y <= 0)
-		// {
-		// 	/* Remove window from render if window size is 0. */
-		// 	continue;
-		// }
+		if(window->Size.x <= 0 || window->Size.y <= 0)
+		{
+			/* Do not render window if its size is 0. */
+			continue;
+		}
 
 		ImGui::SetNextWindowPos(window->Position);
 		ImGui::SetNextWindowSize(window->Size);
@@ -63,7 +62,7 @@ bool LayoutManager::DrawLayoutImpl()
 				case ItemType::Button:
 				{
 					draw_button(std::get<Button*>(item.objItem));
-					/* FIXME: How else I can track, that we need to switch layout and avoid various errors? */
+					/* FIXME: How else can I track, that we need to switch layout and avoid various errors? */
 					if(m_NeedSwitchLayout)
 					{
 						m_NeedSwitchLayout = false;
@@ -90,7 +89,7 @@ BUTTON_CALLBACK_FUNC(LayoutManager::SwitchLayoutImpl)
 {
 	if(args.size() != 1)
 	{
-		LOG_ERROR("Wrong number of arguments provided. Expected[1], but got[%d]", args.size());
+		LOG_ERROR("Wrong number of arguments provided. Expected[%d], but got[%d]", 1, args.size());
 		return;
 	}
 
@@ -98,7 +97,7 @@ BUTTON_CALLBACK_FUNC(LayoutManager::SwitchLayoutImpl)
 	bool found_layout = false;
 	for(auto* layout : g_Layouts)
 	{
-		if(layout->LayoutName == search_name)
+		if(layout->Name == search_name)
 		{
 			found_layout = true;
 			m_CurrentLayout = layout;

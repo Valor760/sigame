@@ -7,7 +7,12 @@
 #define BUTTON_CALLBACK_FUNC(func) void func (const std::vector<std::string>& args)
 
 #define WINDOW_BACKGROUND_FLAGS (ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground)
-#define WINDOW_SIZE_FULLSCREEN   ImVec2(0, 0)
+/*
+** FIXME: If I place Window::GetSize() directly into the structure, then during the automatic
+** initialization it gets (0, 0). This is because auto init happens before the Window::Init() is called.
+** Hardcoding (1600, 900) for now.
+*/
+#define WINDOW_SIZE_FULLSCREEN   ImVec2(1600, 900)
 #define POSITION_DEFAULT         ImVec2(0, 0)
 
 namespace SIGame::App::Core
@@ -50,13 +55,13 @@ struct LayoutWindow
 	ImVec2 Size                = {0, 0};
 	ImVec2 Position            = {0, 0}; /* Upper left corner position */
 	ImGuiWindowFlags Flags     = 0;
-	std::vector<Item> Items   = {};
+	std::vector<Item> Items    = {};
 };
 
 struct Layout
 {
-	std::string LayoutName                       = "";
-	std::vector<LayoutWindow*> LayoutWindowStack = {};
+	std::string Name                       = "";
+	std::vector<LayoutWindow*> WindowStack = {};
 };
 
 class LayoutManager
