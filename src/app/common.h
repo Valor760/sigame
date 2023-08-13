@@ -21,6 +21,8 @@
 #define SIQ_EXTRACT_DIR TMP_DIR"/siq"
 #define ASSETS_DIR		"assets"
 
+#define SIQ_UNUSED(x) ((void)(x))
+
 /* FIXME: FU****NG WINDOWS AND MSVC */
 /* Intellisence in VSCode doesn't work if defines are only written in CMakeLists.txt */
 #ifndef SI_PLATFORM_LINUX

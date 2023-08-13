@@ -9,6 +9,7 @@ add_executable(${EXEC} ${SRC} ${HEADERS})
 
 if(MSVC)
 	target_compile_definitions(${TARGET} PUBLIC ${WINDOWS_DEFINES} ${COMMON_DEFINES})
+	set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 20)
 elseif(UNIX AND NOT APPLE)
 	target_compile_definitions(${TARGET} PUBLIC ${LINUX_DEFINES} ${COMMON_DEFINES})
 endif()
@@ -23,7 +24,7 @@ add_library(imgui
 		${EXTERNAL_DIR}/imgui/backends/imgui_impl_opengl3.cpp
 	)
 
-set(COMMON_LIBS glfw3 imgui GLAD elzip ImGuiFileDialog)
+set(COMMON_LIBS glfw3 imgui GLAD elzip)
 if(UNIX)
 	set(OS_LIBS pthread GL dl)
 else()
