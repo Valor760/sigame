@@ -1,5 +1,6 @@
 #include "layout.h"
 #include "app/window.h"
+#include "layout_common.h"
 
 
 namespace SIGame::App::Core
@@ -15,7 +16,7 @@ static Button MM_SinglePlayer_Button = {
 	.Size  = {400, 50},
 	.Position = {600, 250},
 	.pButtonPressedCallback = LayoutManager::SwitchLayout,
-	.CallbackArgs = { "Single Player" },
+	.CallbackArgs = { NAME_SINGLE_PLAYER_SETUP },
 };
 
 static Button MM_MultiPlayer_Button = {
@@ -64,7 +65,7 @@ static LayoutWindow MM_Background_Window = {
 };
 
 Layout Layout_MainMenu = {
-	.Name = "Main Menu",
+	.Name = NAME_MAIN_MENU,
 	.WindowStack = {
 		&MM_Background_Window, &MM_Buttons_Window
 	},

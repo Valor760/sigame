@@ -1,6 +1,7 @@
 #include "layout.h"
 #include "app/window.h"
 #include "app/core/game.h"
+#include "layout_common.h"
 
 
 namespace SIGame::App::Core
@@ -12,8 +13,9 @@ BUTTON_CALLBACK_FUNC(ChoosePaketCallback)
 	/* First open file dialog and select SIQ paket */
 	Game::SelectSIQPaket();
 
-	/* Then change the button */
+	/* Then change the layout */
 	// std::get<Button*>(Layout_SinglePlayer.LayoutWindowStack[1].Items[0].objItem).Label = "QWEQWEQWEQW";
+	
 }
 
 static Button SP_ChoosePaket_Button = {
@@ -43,7 +45,7 @@ static LayoutWindow SP_Background_Window = {
 };
 
 Layout Layout_SinglePlayer = {
-	.Name = "Single Player",
+	.Name = NAME_SINGLE_PLAYER_SETUP,
 	.WindowStack = {
 		&SP_Background_Window, &SP_Buttons_Window
 	},
